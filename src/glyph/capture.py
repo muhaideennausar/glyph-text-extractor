@@ -42,12 +42,60 @@ class ScreenCapture:
     def capture_interactive(cls) -> Optional[str]:
         """
         Executes interactive screen selection using the best available method:
-        1. XDG Desktop Portal Screenshot (Native Wayland/X11 on GNOME, KDE, etc.)
-        2. slurp + grim (wlroots, Sway, Hyprland)
-        3. maim / scrot (X11)
+        1. slurp + grim (wlroots, Sway, Hyprland - 100% silent)
+        2. gnome-screenshot (GNOME - silent, bypasses Shell notification)
+        3. spectacle (KDE Plasma - silent with -n)
+        4. maim / scrot (X11 desktops - silent)
+        5. XDG Desktop Portal Screenshot (Universal safety net for all modern distros & Flatpak)
         Returns the absolute filesystem path of the captured image, or None if cancelled.
         """
-        # 1. Try XDG Desktop Portal
+        is_wayland = bool(os.environ.get("WAYLAND_DISPLAY"))
+        is_x11 = bool(os.environ.get("DISPLAY")) and not is_wayland
+        desktop = os.environ.get("XDG_CURRENT_DESKTOP", "").lower()
+
+        # 1. Try wlroots (Sway / Hyprland)
+        if is_wayland and any(d in desktop for d in ("sway", "hyprland", "wayfire", "river")):
+            if shutil.which("slurp") and shutil.which("grim"):
+                try:
+                    path = cls._capture_via_grim_slurp()
+                    if path:
+                        return path
+                except Exception as e:
+                    logger.debug(f"wlroots capture failed: {e}")
+
+        # 2. Try gnome-screenshot (silent area capture on GNOME)
+        if shutil.which("gnome-screenshot"):
+            try:
+                path = cls._capture_via_gnome_screenshot()
+                if path:
+                    return path
+            except Exception as e:
+                logger.debug(f"gnome-screenshot capture failed: {e}")
+
+        # 3. Try KDE spectacle (silent region capture on KDE Plasma)
+        if shutil.which("spectacle"):
+            try:
+                path = cls._capture_via_spectacle()
+                if path:
+                    return path
+            except Exception as e:
+                logger.debug(f"spectacle capture failed: {e}")
+
+        # 4. Try X11 maim / scrot
+        if is_x11:
+            if shutil.which("maim"):
+                try:
+                    return cls._capture_via_maim()
+                except Exception as e:
+                    logger.debug(f"maim capture failed: {e}")
+
+            if shutil.which("scrot"):
+                try:
+                    return cls._capture_via_scrot()
+                except Exception as e:
+                    logger.debug(f"scrot capture failed: {e}")
+
+        # 5. Universal Safety Net: XDG Desktop Portal (GNOME default, Flatpak sandbox, etc.)
         try:
             portal_path = cls._capture_via_portal()
             if portal_path:
@@ -57,31 +105,31 @@ class ScreenCapture:
         except Exception as e:
             logger.debug(f"Portal capture failed: {e}")
 
-        # 2. Try wlroots (Sway / Hyprland)
+        # 6. Secondary fallback for wlroots if desktop environment name didn't match
         if shutil.which("slurp") and shutil.which("grim"):
             try:
                 grim_path = cls._capture_via_grim_slurp()
                 if grim_path:
                     return grim_path
             except Exception as e:
-                logger.debug(f"wlroots capture failed: {e}")
+                logger.debug(f"wlroots secondary fallback failed: {e}")
 
-        # 3. Try X11 maim / scrot
+        # 7. Secondary fallback for maim / scrot
         if shutil.which("maim"):
             try:
                 return cls._capture_via_maim()
             except Exception as e:
-                logger.debug(f"maim capture failed: {e}")
+                logger.debug(f"maim secondary fallback failed: {e}")
 
         if shutil.which("scrot"):
             try:
                 return cls._capture_via_scrot()
             except Exception as e:
-                logger.debug(f"scrot capture failed: {e}")
+                logger.debug(f"scrot secondary fallback failed: {e}")
 
         raise PortalUnavailableError(
             "No compatible screenshot utility found.\n"
-            "Ensure XDG Desktop Portal, slurp+grim, or maim is installed."
+            "Ensure XDG Desktop Portal, gnome-screenshot, slurp+grim, or maim is installed."
         )
 
     @staticmethod
@@ -243,6 +291,52 @@ class ScreenCapture:
             logger.warning("scrot selection timed out after 30 seconds.")
         except Exception as e:
             logger.error(f"scrot capture failed: {e}")
+
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
+        return None
+
+    @staticmethod
+    def _capture_via_gnome_screenshot() -> Optional[str]:
+        """Captures area via gnome-screenshot (silent mode without Shell notification)."""
+        temp_path = _create_secure_temp_file()
+        try:
+            proc = subprocess.run(
+                ["gnome-screenshot", "-a", "-f", temp_path],
+                timeout=60
+            )
+            if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                return temp_path
+        except subprocess.TimeoutExpired:
+            logger.warning("gnome-screenshot selection timed out after 60 seconds.")
+        except Exception as e:
+            logger.debug(f"gnome-screenshot capture failed: {e}")
+
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
+        return None
+
+    @staticmethod
+    def _capture_via_spectacle() -> Optional[str]:
+        """Captures rectangular region via KDE spectacle silently without notification."""
+        temp_path = _create_secure_temp_file()
+        try:
+            proc = subprocess.run(
+                ["spectacle", "-r", "-b", "-n", "-o", temp_path],
+                timeout=60
+            )
+            if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                return temp_path
+        except subprocess.TimeoutExpired:
+            logger.warning("spectacle selection timed out after 60 seconds.")
+        except Exception as e:
+            logger.debug(f"spectacle capture failed: {e}")
 
         if os.path.exists(temp_path):
             try:
