@@ -25,7 +25,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y             tesseract-ocr             tesseract-ocr-eng             wl-clipboard             xclip             libgirepository1.0-dev             libcairo2-dev             pkg-config             python3-dev             gir1.2-gtk-4.0             gir1.2-adw-1             desktop-file-utils             appstream
+          sudo apt-get install -y             tesseract-ocr             tesseract-ocr-eng             wl-clipboard             xclip             xvfb             libgirepository1.0-dev             libcairo2-dev             pkg-config             python3-dev             gir1.2-gtk-4.0             gir1.2-adw-1             desktop-file-utils             appstream
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -47,4 +47,4 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
-          python -m unittest discover tests -v
+          xvfb-run -a python -m unittest discover tests -v
