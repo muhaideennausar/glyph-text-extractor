@@ -1,0 +1,72 @@
+name: CI & Quality Assurance
+
+on:
+push:
+branches: [ main, master ]
+pull_request:
+branches: [ main, master ]
+
+jobs:
+test:
+runs-on: ubuntu-latest
+strategy:
+fail-fast: false
+matrix:
+python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+steps:
+- name: Checkout source
+uses: actions/checkout@v4
+
+- name: Install system dependencies
+run: |
+sudo apt-get update
+sudo apt-get install -y \
+tesseract-ocr \
+tesseract-ocr-eng \
+wl-clipboard \
+xclip \
+libgirepository1.0-dev \
+gir1.2-gtk-4.0 \
+gir1.2-adw-1 \
+desktop-file-utils \
+appstream
+
+- name: Set up Python ${{ matrix.python-version }}
+uses: actions/setup-python@v5
+with:
+python-version: ${{ matrix.python-version }}
+cache: pip
+
+- name: Install Python dependencies
+run: |
+python -m pip install --upgrade pip
+pip install Pillow PyGObject build
+
+- name: Validate Desktop Entry & AppStream Metadata
+run: |
+desktop-file-validate data/io.github.glyph.Glyph.desktop
+appstreamcli validate --no-net data/io.github.glyph.Glyph.metainfo.xml
+
+- name: Run Unit & Edge-Case Test Suite
+env:
+PYTHONPATH: src
+run: |
+python -m unittest discover tests -v
+
+- name: Build Wheel & Source Distribution
+run: |
+python -m build
+
+flatpak-lint:
+runs-on: ubuntu-latest
+container:
+image: ghcr.io/flathub/flatpak-builder-lint:latest
+steps:
+- name: Checkout source
+uses: actions/checkout@v4
+
+- name: Lint Flatpak Manifest
+run: |
+flatpak-builder-lint manifest io.github.glyph.Glyph.yaml
+flatpak-builder-lint appstream data/io.github.glyph.Glyph.metainfo.xml

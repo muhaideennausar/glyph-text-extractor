@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.glyph.Glyph</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Glyph</name>
+  <summary>Instant screen OCR and text extractor</summary>
+  <description>
+    <p>
+      Glyph is a lightning-fast screen text extractor for Linux desktops, inspired
+      by PowerToys Text Extractor. It enables you to instantly select any screen region,
+      extract text using optical character recognition, and automatically copy it
+      to your clipboard.
+    </p>
+    <p>Key features include:</p>
+    <ul>
+      <li>Instant Mode A pipeline: crop, preprocess, extract, and copy directly to the system clipboard in milliseconds.</li>
+      <li>Interactive Mode B editor: review, format, trim whitespace, and join broken lines before copying.</li>
+      <li>Native Wayland and X11 compositor support via XDG Desktop Portal, grim, slurp, maim, or scrot.</li>
+      <li>Local, offline processing with zero telemetry and private temporary file storage.</li>
+      <li>Lightweight, native GTK4 and Libadwaita user interface following GNOME Human Interface Guidelines.</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.glyph.Glyph.desktop</launchable>
+  <url type="homepage">https://github.com/glyph-project/glyph</url>
+  <url type="bugtracker">https://github.com/glyph-project/glyph/issues</url>
+  <url type="vcs-browser">https://github.com/glyph-project/glyph</url>
+  <developer id="io.github.glyph">
+    <name>Glyph Contributors</name>
+  </developer>
+  <provides>
+    <binary>glyph</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/glyph-project/glyph/main/assets/screenshots/banner.png</image>
+      <caption>Glyph screen text extraction banner</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/glyph-project/glyph/main/assets/screenshots/mode_a_capture.png</image>
+      <caption>Instant selection and optical character recognition</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/glyph-project/glyph/main/assets/screenshots/mode_b_editor.png</image>
+      <caption>Interactive GTK4 and Libadwaita text review and formatting editor</caption>
+    </screenshot>
+  </screenshots>
+  <categories>
+    <category>Utility</category>
+    <category>Office</category>
+    <category>OCR</category>
+  </categories>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0" date="2026-09-05">
+      <description>
+        <p>Initial production release of Glyph text extractor.</p>
+        <ul>
+          <li>Instant Mode A screen OCR to clipboard</li>
+          <li>Interactive Mode B review and formatting modal</li>
+          <li>Wayland portal and native toolchain support</li>
+          <li>XDG configuration and security hardening</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>
+

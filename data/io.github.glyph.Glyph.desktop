@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=Glyph
+GenericName=Text Extractor
+Comment=Instant screen OCR and text extractor
+Exec=glyph --grab
+Icon=io.github.glyph.Glyph
+Terminal=false
+Type=Application
+Categories=Utility;Scanning;OCR;
+Keywords=OCR;Screenshot;Text;Extract;Snipping;PowerToys;Capture;
+StartupNotify=true
+Actions=Capture;Editor;
+
+[Desktop Action Capture]
+Name=Capture & Copy
+Exec=glyph --grab
+
+[Desktop Action Editor]
+Name=Capture & Edit
+Exec=glyph --grab --edit
+
