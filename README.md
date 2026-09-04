@@ -5,7 +5,7 @@
   <h3>Lightning-Fast Screen Text Extractor for Linux</h3>
   <p>PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.</p>
 
-[![CI](https://github.com/glyph-project/glyph/actions/workflows/ci.yml/badge.svg)](https://github.com/glyph-project/glyph/actions)
+[![CI](https://github.com/muhaideennausar/glyph-text-extractor/actions/workflows/ci.yml/badge.svg)](https://github.com/muhaideennausar/glyph-text-extractor/actions)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Wayland%20%7C%20X11-green.svg)](#)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](#)
@@ -47,8 +47,8 @@
 Clone the repository and run the installer:
 
 ```bash
-git clone https://github.com/glyph-project/glyph.git
-cd glyph
+git clone https://github.com/muhaideennausar/glyph-text-extractor.git
+cd glyph-text-extractor
 ./install.sh
 ```
 

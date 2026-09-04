@@ -22,9 +22,9 @@
     </ul>
   </description>
   <launchable type="desktop-id">io.github.glyph.Glyph.desktop</launchable>
-  <url type="homepage">https://github.com/glyph-project/glyph</url>
-  <url type="bugtracker">https://github.com/glyph-project/glyph/issues</url>
-  <url type="vcs-browser">https://github.com/glyph-project/glyph</url>
+  <url type="homepage">https://github.com/muhaideennausar/glyph-text-extractor</url>
+  <url type="bugtracker">https://github.com/muhaideennausar/glyph-text-extractor/issues</url>
+  <url type="vcs-browser">https://github.com/muhaideennausar/glyph-text-extractor</url>
   <developer id="io.github.glyph">
     <name>Glyph Contributors</name>
   </developer>
@@ -33,15 +33,15 @@
   </provides>
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/glyph-project/glyph/main/assets/screenshots/banner.png</image>
+      <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/banner.png</image>
       <caption>Glyph screen text extraction banner</caption>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/glyph-project/glyph/main/assets/screenshots/mode_a_capture.png</image>
+      <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/mode_a_capture.png</image>
       <caption>Instant selection and optical character recognition</caption>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/glyph-project/glyph/main/assets/screenshots/mode_b_editor.png</image>
+      <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/mode_b_editor.png</image>
       <caption>Interactive GTK4 and Libadwaita text review and formatting editor</caption>
     </screenshot>
   </screenshots>
