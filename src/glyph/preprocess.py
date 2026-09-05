@@ -162,7 +162,8 @@ class ImagePreprocessor:
                 current_max = variance_between
                 threshold = i
 
-        return grayscale.point(lambda p: 255 if p > threshold else 0, mode="1").convert("L")
+        lut = [255 if i > threshold else 0 for i in range(256)]
+        return grayscale.point(lut)
 
     @classmethod
     def process(
