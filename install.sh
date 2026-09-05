@@ -35,7 +35,7 @@ if [ ${#MISSING_PKGS[@]} -gt 0 ]; then
     echo "Please install them using your package manager:"
     echo "  Ubuntu/Debian: sudo apt update && sudo apt install -y ${MISSING_PKGS[*]}"
     echo "  Fedora:        sudo dnf install -y python3-pillow python3-gobject gtk4 libadwaita tesseract wl-clipboard"
-    echo "  Arch:          sudo pacman -S --needed python-pillow python-gobject gtk4 libadwaita tesseract wl-clipboard"
+    echo "  Arch:          sudo pacman -S --needed python-pillow python-gobject gtk4 libadwaita tesseract tesseract-data-eng wl-clipboard"
     echo ""
 fi
 
