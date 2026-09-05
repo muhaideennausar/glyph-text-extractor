@@ -76,7 +76,11 @@ done
 - Release of Glyph - Text Extractor v${VERSION}
 SPEC_EOF
 
-rpmbuild --define "_topdir $RPM_TOPDIR" -bb "$RPM_TOPDIR/SPECS/glyph.spec"
+rpmbuild --define "_topdir $RPM_TOPDIR" \
+         --define "_builddir $RPM_TOPDIR/BUILD" \
+         --define "_rpmdir $RPM_TOPDIR/RPMS" \
+         --define "_srcrpmdir $RPM_TOPDIR/SRPMS" \
+         -bb "$RPM_TOPDIR/SPECS/glyph.spec"
 
 cp "$RPM_TOPDIR"/RPMS/noarch/*.rpm dist/
 echo "✓ Successfully built RPM: \$(ls dist/*.rpm)"

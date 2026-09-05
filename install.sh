@@ -25,8 +25,14 @@ EOF
 
 chmod +x "$BIN_DIR/glyph"
 
+# Ensure user desktop session and systemd services see ~/.local/bin in PATH
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl --user set-environment PATH="$BIN_DIR:$PATH" 2>/dev/null || true
+fi
+
 # Install Desktop Entry & Metainfo
 cp data/io.github.muhaideennausar.Glyph.desktop "$DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
+sed -i "s|^Exec=glyph|Exec=$BIN_DIR/glyph|g" "$DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
 cp data/io.github.muhaideennausar.Glyph.metainfo.xml "$METAINFO_DIR/io.github.muhaideennausar.Glyph.metainfo.xml"
 
 # Auto-sync user custom SVG icon if present

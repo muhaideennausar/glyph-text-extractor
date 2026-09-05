@@ -218,23 +218,23 @@ and narrow columns."""
         self.assertIsNone(result)
 
     @patch("subprocess.run")
-    def test_gnome_screenshot_cancellation(self, mock_run):
-        """Tests that gnome-screenshot cancellation (non-zero or empty file) returns None."""
+    def test_maim_cancellation(self, mock_run):
+        """Tests that maim cancellation (non-zero or empty file) returns None."""
         mock_proc = MagicMock()
         mock_proc.returncode = 1
         mock_run.return_value = mock_proc
 
-        result = ScreenCapture._capture_via_gnome_screenshot()
+        result = ScreenCapture._capture_via_maim()
         self.assertIsNone(result)
 
     @patch("subprocess.run")
-    def test_spectacle_cancellation(self, mock_run):
-        """Tests that spectacle cancellation (non-zero or empty file) returns None."""
+    def test_scrot_cancellation(self, mock_run):
+        """Tests that scrot cancellation (non-zero or empty file) returns None."""
         mock_proc = MagicMock()
         mock_proc.returncode = 1
         mock_run.return_value = mock_proc
 
-        result = ScreenCapture._capture_via_spectacle()
+        result = ScreenCapture._capture_via_scrot()
         self.assertIsNone(result)
 
     # -------------------------------------------------------------------------

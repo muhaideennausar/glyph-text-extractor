@@ -39,18 +39,33 @@ class ConflictDetail:
     path_or_source: str
 
 
+def _resolve_glyph_binary() -> str:
+    """Finds the absolute path to the glyph binary to ensure desktop daemons find it."""
+    for candidate in [
+        shutil.which("glyph"),
+        os.path.expanduser("~/.local/bin/glyph"),
+        "/usr/local/bin/glyph",
+        "/usr/bin/glyph",
+    ]:
+        if candidate and os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    return "glyph"
+
+
+_GLYPH_BIN = _resolve_glyph_binary()
+
 DEFAULT_SHORTCUTS = [
     ShortcutTarget(
         identifier="glyph-mode-a",
         name="Glyph - Instant Text Extractor",
-        command="glyph --grab",
+        command=f"{_GLYPH_BIN} --grab",
         binding="<Super><Shift>t",
         description="Instant Mode A Screen OCR directly to clipboard",
     ),
     ShortcutTarget(
         identifier="glyph-mode-b",
         name="Glyph - Review & Edit",
-        command="glyph --grab --edit",
+        command=f"{_GLYPH_BIN} --grab --edit",
         binding="<Super><Shift>e",
         description="Mode B Interactive Review & Edit modal",
     ),

@@ -48,6 +48,18 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.3" date="2026-09-05">
+      <description>
+        <p>Streamlined capture pipeline, refreshed brand identity, and enhanced GNOME Wayland integration.</p>
+        <ul>
+          <li>Eliminated legacy desktop screenshot fallbacks preventing freeze on modern Wayland compositors</li>
+          <li>Refreshed brand identity with updated master SVG and high-resolution icons (48x48 to 512x512)</li>
+          <li>Enhanced GNOME desktop launcher integration with instant startup responsiveness</li>
+          <li>Hardened shortcut registration with absolute binary path resolution</li>
+          <li>Optimized Linux package installers (.deb, .rpm, portable)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.2" date="2026-09-05">
       <description>
         <p>Branded desktop notifications, documentation updates, and upgrade lifecycle guides.</p>
