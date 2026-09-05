@@ -79,12 +79,15 @@ echo "✓ Glyph - Text Extractor installed to $BIN_DIR/glyph"
 echo "✓ Desktop entry created at $DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
 echo "✓ AppStream metainfo installed at $METAINFO_DIR/io.github.muhaideennausar.Glyph.metainfo.xml"
 echo "✓ High-resolution & symbolic icons installed to $ICONS_DIR"
+
+# Configure global desktop shortcuts interactively
+if [ -t 0 ]; then
+    "$BIN_DIR/glyph" --setup-shortcuts || true
+else
+    "$BIN_DIR/glyph" --setup-shortcuts -y || true
+fi
+
 echo ""
 echo "To test now, run:"
 echo "  glyph --grab"
 echo ""
-echo "To bind to Super + Shift + T in GNOME / Ubuntu:"
-echo "  1. Open Settings -> Keyboard -> View and Customize Shortcuts -> Custom Shortcuts"
-echo "  2. Name: Glyph - Text Extractor"
-echo "  3. Command: $BIN_DIR/glyph"
-echo "  4. Shortcut: Super + Shift + T"

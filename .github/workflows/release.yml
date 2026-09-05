@@ -20,8 +20,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install build tools
+      - name: Install build tools & packaging utilities
         run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
           python -m pip install --upgrade pip
           pip install build
 
@@ -33,6 +35,19 @@ jobs:
         run: |
           chmod +x build_deb.sh
           ./build_deb.sh
+
+      - name: Build RPM Package (.rpm)
+        run: |
+          chmod +x build_rpm.sh
+          ./build_rpm.sh || true
+
+      - name: Build Universal Portable Release Archive
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          ARCHIVE_DIR="glyph-${VERSION}-linux-all"
+          mkdir -p "$ARCHIVE_DIR"
+          cp -r src assets data install.sh uninstall.sh pyproject.toml README.md LICENSE "$ARCHIVE_DIR/"
+          tar -czf "dist/glyph-${VERSION}-linux-portable.tar.gz" "$ARCHIVE_DIR"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -71,38 +86,62 @@ jobs:
             * **DoS Protection:** Enforces a 50-megapixel decompression bomb defense threshold.
             * **Minimal Footprint:** Consumes under 35MB RAM with lazy UI instantiation.
 
-            ### 🖥️ Universal Desktop Compatibility
+            ### 🖥️ Universal Linux Desktop Compatibility
+            * **Cross-Desktop Shortcuts:** Automated intelligent global shortcut setup across GNOME, KDE Plasma, Cinnamon, MATE, XFCE, and tiling WMs (Hyprland, Sway, i3) with collision detection!
             * **Wayland & X11 Ready:** Tested and verified on GNOME 44+, KDE Plasma 6, Hyprland, Sway, and X11 window managers.
             * **XDG Standards:** Fully compliant with XDG Base Directory specifications and XDG Desktop Portal standards.
 
             ---
 
             ## ⌨️ Recommended Global Shortcuts
-
-            Bind these commands in your desktop's Keyboard Shortcuts settings:
             * **Instant Capture (Mode A):** `Super + Shift + T` → `glyph --grab`
             * **Review & Edit (Mode B):** `Super + Shift + E` → `glyph --grab --edit`
+            * **Setup Shortcuts:** Run `glyph --setup-shortcuts` anytime!
 
             ---
 
-            ## 📦 Installation & Assets
+            ## 📦 Multi-Distro Installation Matrix
 
-            ### Option 1: Debian / Ubuntu / Linux Mint / Pop!_OS (.deb)
-            Download `glyph-text-extractor_${{ github.ref_name }}_all.deb` from the assets below and install:
+            ### 1. Debian / Ubuntu / Linux Mint / Pop!_OS (.deb)
+            Download `glyph-text-extractor_*.deb` from below and install:
             ```bash
             sudo apt install ./glyph-text-extractor_*.deb
             ```
 
-            ### Option 2: Native local installation from source:
+            ### 2. Fedora / RHEL / openSUSE (.rpm)
+            Download `glyph-text-extractor-*.rpm` from below and install:
+            ```bash
+            sudo dnf install ./glyph-text-extractor-*.rpm
+            # On openSUSE:
+            sudo zypper install ./glyph-text-extractor-*.rpm
+            ```
+
+            ### 3. Arch Linux / Manjaro / EndeavourOS
+            Clone and build with makepkg:
             ```bash
             git clone https://github.com/muhaideennausar/glyph-text-extractor.git
-            cd glyph-text-extractor
+            cd glyph-text-extractor/packaging/arch
+            makepkg -si
+            ```
+
+            ### 4. Universal Python (`pipx` on any distribution)
+            ```bash
+            pipx install git+https://github.com/muhaideennausar/glyph-text-extractor.git
+            glyph --setup-shortcuts
+            ```
+
+            ### 5. Universal Portable Tarball (Any Linux Distribution)
+            Download `glyph-*-linux-portable.tar.gz` from below, extract and install:
+            ```bash
+            tar -xzf glyph-*-linux-portable.tar.gz
+            cd glyph-*-linux-portable
             ./install.sh
             ```
           files: |
             dist/*.whl
             dist/*.tar.gz
             dist/*.deb
+            dist/*.rpm
           generate_release_notes: true
           draft: false
           prerelease: false

@@ -40,19 +40,49 @@
 
 ---
 
-## 📦 Installation
+## 📦 Multi-Distro Installation
+
+Glyph is engineered to install natively across all major Linux distributions.
 
 ### Option 1: Debian / Ubuntu / Linux Mint / Pop!\_OS (.deb)
 
-Download the latest `.deb` package from the official [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page and install it with one command (dependencies resolve automatically):
+Download the latest `.deb` package from the official [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page and install it with one command (all dependencies resolve automatically):
 
 ```bash
 sudo apt install ./glyph-text-extractor_*_all.deb
 ```
 
-### Option 2: Native Local Installer (From Source)
+### Option 2: Fedora / RHEL / CentOS / Rocky (.rpm)
 
-Clone the repository and run the installer:
+Download the latest `.rpm` package from the [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page:
+
+```bash
+sudo dnf install ./glyph-text-extractor-*.rpm
+```
+
+*On openSUSE:*
+```bash
+sudo zypper install ./glyph-text-extractor-*.rpm
+```
+
+### Option 3: Arch Linux / Manjaro / EndeavourOS
+
+Clone the repository and build via `makepkg`:
+
+```bash
+git clone https://github.com/muhaideennausar/glyph-text-extractor.git
+cd glyph-text-extractor/packaging/arch
+makepkg -si
+```
+
+### Option 4: Universal Python (`pipx` on any Linux distro)
+
+```bash
+pipx install git+https://github.com/muhaideennausar/glyph-text-extractor.git
+glyph --setup-shortcuts
+```
+
+### Option 5: Native Local Installer (From Source)
 
 ```bash
 git clone https://github.com/muhaideennausar/glyph-text-extractor.git
@@ -60,9 +90,7 @@ cd glyph-text-extractor
 ./install.sh
 ```
 
-This installs `glyph` into `~/.local/bin/glyph`, installs the desktop entry, and registers high-resolution and symbolic icons into your desktop environment.
-
-Make sure dependencies are installed on your distribution:
+Ensure system dependencies are installed:
 
 | Distribution                   | Command                                                                                                                               |
 | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
@@ -71,12 +99,20 @@ Make sure dependencies are installed on your distribution:
 | **Arch / Manjaro**             | `sudo pacman -S tesseract tesseract-data-eng wl-clipboard python-pillow python-gobject gtk4 libadwaita`                               |
 | **openSUSE**                   | `sudo zypper install tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard python3-Pillow python3-gobject gtk4 libadwaita-1-0` |
 
-### Option 3: Flatpak (Flathub)
+---
+
+## ⌨️ Intelligent Global Shortcuts
+
+Glyph includes an automated cross-desktop shortcut setup engine that runs across **GNOME, KDE Plasma, Cinnamon, MATE, XFCE, and tiling WMs (Hyprland, Sway, i3)**:
 
 ```bash
-flatpak install flathub io.github.muhaideennausar.Glyph
-flatpak run io.github.muhaideennausar.Glyph
+glyph --setup-shortcuts
 ```
+
+* **Collision Detection:** If a key combination (e.g. `<Super><Shift>t`) is already claimed by another application, Glyph retrieves and displays the conflicting shortcut's name, command, and key, and asks for your permission before replacing it.
+* **Permission Prompt:** If no collision exists, it still asks for your confirmation before appending the shortcut.
+* **Non-Interactive Mode:** For automated scripts, run with `-y`: `glyph --setup-shortcuts -y`.
+* **Clean Removal:** Run `glyph --remove-shortcuts` to deregister shortcuts at any time.
 
 ---
 

@@ -52,6 +52,17 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.1" date="2026-09-05">
+      <description>
+        <p>Cross-desktop global shortcut engine and universal multi-distro packaging.</p>
+        <ul>
+          <li>Interactive desktop shortcut configuration with collision detection and conflict resolution</li>
+          <li>Support for GNOME, KDE Plasma, XFCE, Cinnamon, MATE, Hyprland, Sway, and i3</li>
+          <li>Official Debian (.deb), Fedora/openSUSE (.rpm), and Arch Linux PKGBUILD packaging</li>
+          <li>Standalone portable Linux tarball with self-contained launcher</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-09-05">
       <description>
         <p>Initial production release of Glyph - Text Extractor.</p>

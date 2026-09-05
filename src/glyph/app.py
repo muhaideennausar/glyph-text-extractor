@@ -109,6 +109,21 @@ def parse_args() -> argparse.Namespace:
         help="Enable detailed debug logging."
     )
     parser.add_argument(
+        "--setup-shortcuts",
+        action="store_true",
+        help="Interactively configure global desktop shortcuts with collision detection."
+    )
+    parser.add_argument(
+        "--remove-shortcuts",
+        action="store_true",
+        help="Remove registered Glyph global desktop shortcuts."
+    )
+    parser.add_argument(
+        "--yes", "-y",
+        action="store_true",
+        help="Automatic yes to prompts (non-interactive mode)."
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="Enable verbose output."
@@ -185,6 +200,17 @@ def main() -> None:
 
     # Configure structured logging
     setup_logging(debug=args.debug, verbose=args.verbose)
+
+    # Shortcut management commands
+    if args.setup_shortcuts:
+        from glyph.shortcuts import setup_global_shortcuts
+        success = setup_global_shortcuts(auto_yes=args.yes)
+        sys.exit(0 if success else 1)
+
+    if args.remove_shortcuts:
+        from glyph.shortcuts import remove_global_shortcuts
+        remove_global_shortcuts()
+        sys.exit(0)
 
     # 1. Load configuration from XDG location
     config_mgr = ConfigManager()

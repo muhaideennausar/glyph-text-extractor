@@ -1,0 +1,48 @@
+# Maintainer: Muhaideen Nausar <muhaideennausar@gmail.com>
+pkgname=glyph-text-extractor
+_pkgname=glyph_ocr
+pkgver=0.1.1
+pkgrel=1
+pkgdesc="Lightning-fast screen text extractor for Linux (PowerToys Text Extractor alternative)"
+arch=('any')
+url="https://github.com/muhaideennausar/glyph-text-extractor"
+license=('GPL-3.0-or-later')
+depends=(
+    'python>=3.10'
+    'python-pillow'
+    'python-gobject'
+    'gtk4'
+    'libadwaita'
+    'tesseract'
+    'tesseract-data-eng'
+    'wl-clipboard'
+)
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$pkgname-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    install -Dm644 "data/io.github.muhaideennausar.Glyph.desktop" \
+        "$pkgdir/usr/share/applications/io.github.muhaideennausar.Glyph.desktop"
+    install -Dm644 "data/io.github.muhaideennausar.Glyph.metainfo.xml" \
+        "$pkgdir/usr/share/metainfo/io.github.muhaideennausar.Glyph.metainfo.xml"
+    install -Dm644 "assets/icons/scalable/io.github.muhaideennausar.Glyph.svg" \
+        "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.muhaideennausar.Glyph.svg"
+    install -Dm644 "assets/icons/scalable/io.github.muhaideennausar.Glyph-symbolic.svg" \
+        "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.muhaideennausar.Glyph-symbolic.svg"
+
+    for size in 48x48 64x64 128x128 256x256 512x512; do
+        if [ -f "assets/icons/hicolor/$size/apps/io.github.muhaideennausar.Glyph.png" ]; then
+            install -Dm644 "assets/icons/hicolor/$size/apps/io.github.muhaideennausar.Glyph.png" \
+                "$pkgdir/usr/share/icons/hicolor/$size/apps/io.github.muhaideennausar.Glyph.png"
+        fi
+    done
+}

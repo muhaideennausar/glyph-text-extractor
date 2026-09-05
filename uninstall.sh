@@ -3,6 +3,11 @@ set -e
 
 echo "=== Removing local Glyph development installation ==="
 
+# Remove global shortcuts
+if command -v glyph >/dev/null 2>&1; then
+    glyph --remove-shortcuts 2>/dev/null || true
+fi
+
 # Remove launcher & library
 rm -f "$HOME/.local/bin/glyph"
 rm -rf "$HOME/.local/lib/glyph"
