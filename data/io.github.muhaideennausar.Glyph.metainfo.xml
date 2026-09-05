@@ -50,6 +50,17 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.2.1" date="2026-09-06">
+      <description>
+        <p>Cross-distro polish and packaging stability release for Arch Linux, Fedora, and Debian environments.</p>
+        <ul>
+          <li>Interactive and automatic shell PATH configuration ensuring ~/.local/bin is registered across bash and zsh</li>
+          <li>Arch Linux package dependency alignment adding tesseract-data-eng</li>
+          <li>Aligned cross-desktop and tiling window manager (Hyprland, Sway) shortcut instructions with v0.2.0 defaults</li>
+          <li>Verified out-of-the-box compatibility on Fedora 40+ and Arch Linux Wayland environments</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.0" date="2026-09-05">
       <description>
         <p>Next-generation OCR engine upgrade with geometry-aware PSM layout detection, edge enhancement, and silent Wayland portal integration.</p>

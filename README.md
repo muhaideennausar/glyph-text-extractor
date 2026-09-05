@@ -66,6 +66,7 @@ Download the latest `.deb` package from the official [Releases](https://github.c
 
 ```bash
 sudo apt install ./glyph-text-extractor_*_all.deb
+glyph --setup-shortcuts
 ```
 
 ### Option 2: Fedora / RHEL / CentOS / Rocky (.rpm)
@@ -74,12 +75,14 @@ Download the latest `.rpm` package from the [Releases](https://github.com/muhaid
 
 ```bash
 sudo dnf install ./glyph-text-extractor-*.rpm
+glyph --setup-shortcuts
 ```
 
 _On openSUSE:_
 
 ```bash
 sudo zypper install ./glyph-text-extractor-*.rpm
+glyph --setup-shortcuts
 ```
 
 ### Option 3: Arch Linux / Manjaro / EndeavourOS
@@ -90,6 +93,7 @@ Clone the repository and build via `makepkg`:
 git clone https://github.com/muhaideennausar/glyph-text-extractor.git
 cd glyph-text-extractor/packaging/arch
 makepkg -si
+glyph --setup-shortcuts
 ```
 
 ### Option 4: Universal Python (`pipx` on any Linux distro)
