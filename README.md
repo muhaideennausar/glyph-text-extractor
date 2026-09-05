@@ -42,7 +42,7 @@
 
 ## 📦 Installation
 
-### Option 1: Debian / Ubuntu / Linux Mint / Pop!_OS (.deb)
+### Option 1: Debian / Ubuntu / Linux Mint / Pop!\_OS (.deb)
 
 Download the latest `.deb` package from the official [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page and install it with one command (dependencies resolve automatically):
 
