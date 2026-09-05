@@ -71,6 +71,15 @@ if command -v systemctl >/dev/null 2>&1; then
     systemctl --user set-environment PATH="$BIN_DIR:$PATH" 2>/dev/null || true
 fi
 
+# Ensure ~/.local/bin is in PATH for future interactive shells
+if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+        if [ -f "$rc" ] && ! grep -q 'PATH=.*\.local/bin' "$rc"; then
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
+        fi
+    done
+fi
+
 # Install Desktop Entry & Metainfo
 cp data/io.github.muhaideennausar.Glyph.desktop "$DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
 sed -i "s|^Exec=glyph|Exec=$BIN_DIR/glyph|g" "$DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
@@ -142,5 +151,10 @@ fi
 
 echo ""
 echo "To test now, run:"
-echo "  glyph --grab"
+if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+    echo "  source ~/.bashrc && glyph --grab"
+    echo "  (or directly: $BIN_DIR/glyph --grab)"
+else
+    echo "  glyph --grab"
+fi
 echo ""
