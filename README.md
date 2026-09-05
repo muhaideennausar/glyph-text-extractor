@@ -329,6 +329,7 @@ Glyph follows the XDG Base Directory specification. Configuration settings are a
 ```
 
 ### Page Segmentation Modes (`default_psm`)
+
 - **`3` (Default):** Fully automatic page segmentation without OSD (preserves statement breaks, code blocks, and multi-paragraph layout).
 - **`6`:** Assume a single uniform block of text.
 - **`7`:** Treat the image as a single text line.
