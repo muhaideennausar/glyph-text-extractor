@@ -52,6 +52,16 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.2" date="2026-09-05">
+      <description>
+        <p>Branded desktop notifications, documentation updates, and upgrade lifecycle guides.</p>
+        <ul>
+          <li>Official Glyph application logo and desktop-entry hint in system notifications</li>
+          <li>Comprehensive multi-distro upgrade instructions in documentation</li>
+          <li>Portable tarball archive packaging support</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.1" date="2026-09-05">
       <description>
         <p>Cross-desktop global shortcut engine and universal multi-distro packaging.</p>

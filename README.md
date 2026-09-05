@@ -83,7 +83,17 @@ pipx install git+https://github.com/muhaideennausar/glyph-text-extractor.git
 glyph --setup-shortcuts
 ```
 
-### Option 5: Native Local Installer (From Source)
+### Option 5: Universal Portable Release Archive (.tar.gz)
+
+Download `glyph-*-linux-portable.tar.gz` from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases), extract and run the bundled installer:
+
+```bash
+tar -xzf glyph-*-linux-portable.tar.gz
+cd glyph-*-linux-all
+./install.sh
+```
+
+### Option 6: Native Local Installer (From Source)
 
 ```bash
 git clone https://github.com/muhaideennausar/glyph-text-extractor.git
@@ -99,6 +109,49 @@ Ensure system dependencies are installed:
 | **Fedora**                     | `sudo dnf install tesseract tesseract-langpack-eng wl-clipboard python3-pillow python3-gobject gtk4 libadwaita`                       |
 | **Arch / Manjaro**             | `sudo pacman -S tesseract tesseract-data-eng wl-clipboard python-pillow python-gobject gtk4 libadwaita`                               |
 | **openSUSE**                   | `sudo zypper install tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard python3-Pillow python3-gobject gtk4 libadwaita-1-0` |
+
+---
+
+## 🔄 Updating & Upgrading Glyph
+
+To upgrade Glyph when a new version is released:
+
+### Debian / Ubuntu / Linux Mint / Pop!\_OS (.deb)
+Download the updated `.deb` package from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) and upgrade:
+```bash
+sudo apt install --reinstall ./glyph-text-extractor_*_all.deb
+# Or via dpkg:
+sudo dpkg -i ./glyph-text-extractor_*_all.deb
+```
+
+### Fedora / RHEL / openSUSE (.rpm)
+Download the updated `.rpm` package and upgrade:
+```bash
+sudo dnf upgrade ./glyph-text-extractor-*.rpm
+# On openSUSE:
+sudo zypper update ./glyph-text-extractor-*.rpm
+```
+
+### Arch Linux / Manjaro / EndeavourOS
+Pull the latest source and rebuild:
+```bash
+cd glyph-text-extractor
+git pull origin main
+cd packaging/arch && makepkg -si
+```
+
+### Python / pipx
+```bash
+pipx upgrade glyph-ocr
+# Or reinstall latest from GitHub:
+pipx install --force git+https://github.com/muhaideennausar/glyph-text-extractor.git
+```
+
+### From Source or Portable Archive
+```bash
+git pull origin main
+./install.sh
+```
 
 ---
 
@@ -140,9 +193,12 @@ When you trigger Glyph - Text Extractor (`glyph --grab`) for the first time on m
 
 ---
 
-## ⌨️ Set Up Global Keyboard Shortcuts
+## ⌨️ Manual Global Keyboard Shortcuts (Optional)
 
-To make Glyph - Text Extractor feel like a built-in OS tool (similar to PowerToys Text Extractor on Windows):
+> [!TIP]
+> You do not need to configure shortcuts manually! Simply run `glyph --setup-shortcuts` in your terminal, and Glyph will automatically detect your desktop environment and configure shortcuts with collision detection.
+
+If you prefer to configure shortcuts manually via your desktop environment settings:
 
 ### GNOME / Ubuntu (Wayland or X11)
 
@@ -150,11 +206,11 @@ To make Glyph - Text Extractor feel like a built-in OS tool (similar to PowerToy
 2. Click **+** to add a new shortcut:
    - **Instant Capture (Mode A):**
      - **Name:** `Glyph - Text Extractor`
-     - **Command:** `/home/<your-user>/.local/bin/glyph --grab`
+     - **Command:** `glyph --grab`
      - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
    - **Review & Edit (Mode B):**
      - **Name:** `Glyph - Text Extractor (Review & Edit)`
-     - **Command:** `/home/<your-user>/.local/bin/glyph --grab --edit`
+     - **Command:** `glyph --grab --edit`
      - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd>
 
 ### Hyprland (`~/.config/hypr/hyprland.conf`)
