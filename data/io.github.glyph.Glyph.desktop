@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Glyph
+Name=Glyph - Text Extractor
 GenericName=Text Extractor
-Comment=Instant screen OCR and text extractor
+Comment=Lightning-fast screen text extractor for Linux (PowerToys Text Extractor alternative)
 Exec=glyph --grab
 Icon=io.github.glyph.Glyph
 Terminal=false

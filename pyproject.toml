@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "glyph-ocr"
 version = "0.1.0"
-description = "Lightning-fast Linux screen text extractor (PowerToys Text Extractor clone)"
+description = "Glyph - Text Extractor: Lightning-fast Linux screen text extractor (PowerToys Text Extractor clone)"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.10"
 authors = [
-    { name = "Glyph Contributors" }
+    { name = "Glyph - Text Extractor Contributors" }
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

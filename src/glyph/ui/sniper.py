@@ -81,7 +81,7 @@ class SniperOverlayWindow(Gtk.ApplicationWindow):
             self.img_h = 1080
 
         # Window configuration
-        self.set_title("Glyph Sniper")
+        self.set_title("Glyph - Text Extractor — Sniper")
         self.set_decorated(False)
         self.fullscreen()
         self.set_cursor_from_name("crosshair")

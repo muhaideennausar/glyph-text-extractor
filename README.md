@@ -1,7 +1,7 @@
-# Glyph 🔍
+# Glyph - Text Extractor 🔍
 
 <div align="center">
-  <img src="assets/icons/scalable/io.github.glyph.Glyph.svg" width="128" height="128" alt="Glyph Logo" />
+  <img src="assets/icons/scalable/io.github.glyph.Glyph.svg" width="128" height="128" alt="Glyph - Text Extractor Logo" />
   <h3>Lightning-Fast Screen Text Extractor for Linux</h3>
   <p>PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.</p>
 
@@ -15,12 +15,12 @@
 ---
 
 <div align="center">
-  <img src="assets/screenshots/banner.png" width="800" alt="Glyph Banner" />
+  <img src="assets/screenshots/banner.png" width="800" alt="Glyph - Text Extractor Banner" />
 </div>
 
 ---
 
-## ⚡ Why Glyph?
+## ⚡ Why Glyph - Text Extractor?
 
 - **Instant Execution:** Snappy background pipeline with in-memory image streaming and lazy UI loading (~20ms latency).
 - **Two Operating Modes:**
@@ -74,7 +74,7 @@ flatpak run io.github.glyph.Glyph
 
 ## 🔐 First-Time Launch & Wayland Permissions
 
-When you trigger Glyph (`glyph --grab`) for the first time on modern GNOME (Ubuntu 24.04+, Fedora 39+, etc. running Wayland), your desktop will present a system security dialog:
+When you trigger Glyph - Text Extractor (`glyph --grab`) for the first time on modern GNOME (Ubuntu 24.04+, Fedora 39+, etc. running Wayland), your desktop will present a system security dialog:
 
 <div align="center">
   <blockquote>
@@ -87,7 +87,7 @@ When you trigger Glyph (`glyph --grab`) for the first time on modern GNOME (Ubun
 ### Why does this appear?
 
 - **Wayland Security Isolation:** On modern Wayland compositors, applications are strictly isolated from one another so that background programs cannot silently spy on your screen, passwords, or personal data.
-- **Silent Sniper Snapshot:** To provide an instant screen freeze with Glyph's custom GTK4 sniper overlay—bypassing GNOME's camera shutter sound, flash, and duplicate OS notifications—Glyph requests a background screenshot via the standard XDG Desktop Portal (`org.freedesktop.portal.Screenshot`).
+- **Silent Sniper Snapshot:** To provide an instant screen freeze with Glyph - Text Extractor's custom GTK4 sniper overlay—bypassing GNOME's camera shutter sound, flash, and duplicate OS notifications—Glyph requests a background screenshot via the standard XDG Desktop Portal (`org.freedesktop.portal.Screenshot`).
 - **One-Time Authorization:** Click **Allow**. GNOME permanently remembers your decision in **Settings → Privacy & Security → Screen Capture**. All future extractions will launch instantly without any prompts.
 
 > [!TIP]
@@ -97,18 +97,18 @@ When you trigger Glyph (`glyph --grab`) for the first time on modern GNOME (Ubun
 
 ## ⌨️ Set Up Global Keyboard Shortcuts
 
-To make Glyph feel like a built-in OS tool (similar to PowerToys Text Extractor on Windows):
+To make Glyph - Text Extractor feel like a built-in OS tool (similar to PowerToys Text Extractor on Windows):
 
 ### GNOME / Ubuntu (Wayland or X11)
 
 1. Open **Settings** → **Keyboard** → **View and Customize Shortcuts** → **Custom Shortcuts**.
 2. Click **+** to add a new shortcut:
    - **Instant Capture (Mode A):**
-     - **Name:** `Glyph Text Extractor`
+     - **Name:** `Glyph - Text Extractor`
      - **Command:** `/home/<your-user>/.local/bin/glyph --grab`
      - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
    - **Review & Edit (Mode B):**
-     - **Name:** `Glyph Review Editor`
+     - **Name:** `Glyph - Text Extractor (Review & Edit)`
      - **Command:** `/home/<your-user>/.local/bin/glyph --grab --edit`
      - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd>
 

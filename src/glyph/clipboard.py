@@ -99,7 +99,7 @@ class NotificationManager:
 
         body = f"Copied to clipboard:\n\"{preview}\""
         NotificationManager._send(
-            title="Glyph Text Extractor",
+            title="Glyph - Text Extractor",
             body=body,
             icon="edit-copy",
             urgency="normal"
@@ -109,7 +109,7 @@ class NotificationManager:
     def notify_no_text() -> None:
         """Notifies the user that no text was detected."""
         NotificationManager._send(
-            title="Glyph Text Extractor",
+            title="Glyph - Text Extractor",
             body="No text detected in selected region.",
             icon="dialog-information",
             urgency="low"
@@ -119,7 +119,7 @@ class NotificationManager:
     def notify_error(message: str) -> None:
         """Notifies the user of an error."""
         NotificationManager._send(
-            title="Glyph Error",
+            title="Glyph - Text Extractor (Error)",
             body=message,
             icon="dialog-error",
             urgency="critical"
@@ -132,7 +132,7 @@ class NotificationManager:
                 subprocess.run(
                     [
                         "notify-send",
-                        "-a", "Glyph",
+                        "-a", "Glyph - Text Extractor",
                         "-i", icon,
                         "-u", urgency,
                         title,
@@ -164,7 +164,7 @@ class NotificationManager:
                 "Notify",
                 GLib.Variant(
                     "(susssasa{sv}i)",
-                    ("Glyph", 0, icon, title, body, [], {}, 4000)
+                    ("Glyph - Text Extractor", 0, icon, title, body, [], {}, 4000)
                 ),
                 Gio.DBusCallFlags.NONE,
                 3000,

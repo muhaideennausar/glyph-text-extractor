@@ -38,7 +38,7 @@ class TextEditorWindow(Adw.ApplicationWindow):
         cfg = self.config_manager.load_config()
         editor_cfg = cfg.get("editor", {})
 
-        self.set_title("Glyph - Review & Edit")
+        self.set_title("Glyph - Text Extractor — Review & Edit")
         init_w = editor_cfg.get("window_width", 640)
         init_h = editor_cfg.get("window_height", 440)
         self.set_default_size(init_w, init_h)

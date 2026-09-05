@@ -30,7 +30,7 @@ logger = logging.getLogger("glyph")
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=__app_name__,
-        description="Glyph: High-performance Linux screen text extractor (PowerToys Text Extractor clone)."
+        description="Glyph - Text Extractor: High-performance Linux screen text extractor (PowerToys Text Extractor clone)."
     )
     parser.add_argument(
         "--grab", "-g",

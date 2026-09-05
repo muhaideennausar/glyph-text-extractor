@@ -3,11 +3,11 @@
   <id>io.github.glyph.Glyph</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
-  <name>Glyph</name>
-  <summary>Instant screen OCR and text extractor</summary>
+  <name>Glyph - Text Extractor</name>
+  <summary>Lightning-fast screen text extractor for Linux</summary>
   <description>
     <p>
-      Glyph is a lightning-fast screen text extractor for Linux desktops, inspired
+      Glyph - Text Extractor is a lightning-fast screen text extractor for Linux desktops, inspired
       by PowerToys Text Extractor. It enables you to instantly select any screen region,
       extract text using optical character recognition, and automatically copy it
       to your clipboard.
@@ -26,7 +26,7 @@
   <url type="bugtracker">https://github.com/muhaideennausar/glyph-text-extractor/issues</url>
   <url type="vcs-browser">https://github.com/muhaideennausar/glyph-text-extractor</url>
   <developer id="io.github.glyph">
-    <name>Glyph Contributors</name>
+    <name>Glyph - Text Extractor Contributors</name>
   </developer>
   <provides>
     <binary>glyph</binary>
@@ -34,7 +34,7 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/banner.png</image>
-      <caption>Glyph screen text extraction banner</caption>
+      <caption>Glyph - Text Extractor banner</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/mode_a_capture.png</image>
@@ -54,7 +54,7 @@
   <releases>
     <release version="0.1.0" date="2026-09-05">
       <description>
-        <p>Initial production release of Glyph text extractor.</p>
+        <p>Initial production release of Glyph - Text Extractor.</p>
         <ul>
           <li>Instant Mode A screen OCR to clipboard</li>
           <li>Interactive Mode B review and formatting modal</li>

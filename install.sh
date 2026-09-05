@@ -7,7 +7,7 @@ DESKTOP_DIR="$HOME/.local/share/applications"
 METAINFO_DIR="$HOME/.local/share/metainfo"
 ICONS_DIR="$HOME/.local/share/icons/hicolor"
 
-echo "=== Installing Glyph Text Extractor ==="
+echo "=== Installing Glyph - Text Extractor ==="
 
 mkdir -p "$INSTALL_DIR" "$BIN_DIR" "$DESKTOP_DIR" "$METAINFO_DIR"
 
@@ -75,7 +75,7 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
     gtk-update-icon-cache -q -t "$ICONS_DIR" || true
 fi
 
-echo "✓ Glyph installed to $BIN_DIR/glyph"
+echo "✓ Glyph - Text Extractor installed to $BIN_DIR/glyph"
 echo "✓ Desktop entry created at $DESKTOP_DIR/io.github.glyph.Glyph.desktop"
 echo "✓ AppStream metainfo installed at $METAINFO_DIR/io.github.glyph.Glyph.metainfo.xml"
 echo "✓ High-resolution & symbolic icons installed to $ICONS_DIR"
@@ -85,6 +85,6 @@ echo "  glyph --grab"
 echo ""
 echo "To bind to Super + Shift + T in GNOME / Ubuntu:"
 echo "  1. Open Settings -> Keyboard -> View and Customize Shortcuts -> Custom Shortcuts"
-echo "  2. Name: Glyph Text Extractor"
+echo "  2. Name: Glyph - Text Extractor"
 echo "  3. Command: $BIN_DIR/glyph"
 echo "  4. Shortcut: Super + Shift + T"
