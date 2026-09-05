@@ -60,7 +60,8 @@ Download the latest `.rpm` package from the [Releases](https://github.com/muhaid
 sudo dnf install ./glyph-text-extractor-*.rpm
 ```
 
-*On openSUSE:*
+_On openSUSE:_
+
 ```bash
 sudo zypper install ./glyph-text-extractor-*.rpm
 ```
@@ -109,10 +110,10 @@ Glyph includes an automated cross-desktop shortcut setup engine that runs across
 glyph --setup-shortcuts
 ```
 
-* **Collision Detection:** If a key combination (e.g. `<Super><Shift>t`) is already claimed by another application, Glyph retrieves and displays the conflicting shortcut's name, command, and key, and asks for your permission before replacing it.
-* **Permission Prompt:** If no collision exists, it still asks for your confirmation before appending the shortcut.
-* **Non-Interactive Mode:** For automated scripts, run with `-y`: `glyph --setup-shortcuts -y`.
-* **Clean Removal:** Run `glyph --remove-shortcuts` to deregister shortcuts at any time.
+- **Collision Detection:** If a key combination (e.g. `<Super><Shift>t`) is already claimed by another application, Glyph retrieves and displays the conflicting shortcut's name, command, and key, and asks for your permission before replacing it.
+- **Permission Prompt:** If no collision exists, it still asks for your confirmation before appending the shortcut.
+- **Non-Interactive Mode:** For automated scripts, run with `-y`: `glyph --setup-shortcuts -y`.
+- **Clean Removal:** Run `glyph --remove-shortcuts` to deregister shortcuts at any time.
 
 ---
 

@@ -39,7 +39,7 @@ jobs:
       - name: Build RPM Package (.rpm)
         run: |
           chmod +x build_rpm.sh
-          ./build_rpm.sh || true
+          ./build_rpm.sh
 
       - name: Build Universal Portable Release Archive
         run: |
