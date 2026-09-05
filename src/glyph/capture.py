@@ -42,18 +42,36 @@ class ScreenCapture:
     def capture_interactive(cls) -> Optional[str]:
         """
         Executes interactive screen selection using the best available method:
-        1. slurp + grim (wlroots, Sway, Hyprland - 100% silent)
-        2. gnome-screenshot (GNOME - silent, bypasses Shell notification)
-        3. spectacle (KDE Plasma - silent with -n)
-        4. maim / scrot (X11 desktops - silent)
-        5. XDG Desktop Portal Screenshot (Universal safety net for all modern distros & Flatpak)
+        1. Native GTK4 Sniper Overlay (PowerToys style: silent, darkened overlay with crosshair crop)
+        2. slurp + grim (wlroots, Sway, Hyprland fallback)
+        3. gnome-screenshot (GNOME fallback)
+        4. spectacle (KDE Plasma fallback)
+        5. maim / scrot (X11 desktops fallback)
+        6. XDG Desktop Portal Screenshot (Universal safety net)
         Returns the absolute filesystem path of the captured image, or None if cancelled.
         """
+        # 1. Primary: Native GTK4 Sniper Overlay (True PowerToys Text Extractor experience)
+        try:
+            fullscreen_path = cls._capture_fullscreen_snapshot()
+            if fullscreen_path and os.path.exists(fullscreen_path):
+                from glyph.ui.sniper import interactive_sniper_crop
+                crop_path = interactive_sniper_crop(fullscreen_path)
+                # Ensure full-screen background snapshot is deleted immediately
+                if os.path.exists(fullscreen_path):
+                    try:
+                        os.unlink(fullscreen_path)
+                    except OSError:
+                        pass
+                return crop_path
+        except Exception as e:
+            logger.debug(f"Sniper overlay capture failed, trying fallback cascade: {e}")
+
+        # Fallback Cascade
         is_wayland = bool(os.environ.get("WAYLAND_DISPLAY"))
         is_x11 = bool(os.environ.get("DISPLAY")) and not is_wayland
         desktop = os.environ.get("XDG_CURRENT_DESKTOP", "").lower()
 
-        # 1. Try wlroots (Sway / Hyprland)
+        # 2. Try wlroots (Sway / Hyprland)
         if is_wayland and any(d in desktop for d in ("sway", "hyprland", "wayfire", "river")):
             if shutil.which("slurp") and shutil.which("grim"):
                 try:
@@ -63,7 +81,7 @@ class ScreenCapture:
                 except Exception as e:
                     logger.debug(f"wlroots capture failed: {e}")
 
-        # 2. Try gnome-screenshot (silent area capture on GNOME)
+        # 3. Try gnome-screenshot (silent area capture on GNOME)
         if shutil.which("gnome-screenshot"):
             try:
                 path = cls._capture_via_gnome_screenshot()
@@ -72,7 +90,7 @@ class ScreenCapture:
             except Exception as e:
                 logger.debug(f"gnome-screenshot capture failed: {e}")
 
-        # 3. Try KDE spectacle (silent region capture on KDE Plasma)
+        # 4. Try KDE spectacle (silent region capture on KDE Plasma)
         if shutil.which("spectacle"):
             try:
                 path = cls._capture_via_spectacle()
@@ -81,7 +99,7 @@ class ScreenCapture:
             except Exception as e:
                 logger.debug(f"spectacle capture failed: {e}")
 
-        # 4. Try X11 maim / scrot
+        # 5. Try X11 maim / scrot
         if is_x11:
             if shutil.which("maim"):
                 try:
@@ -95,9 +113,9 @@ class ScreenCapture:
                 except Exception as e:
                     logger.debug(f"scrot capture failed: {e}")
 
-        # 5. Universal Safety Net: XDG Desktop Portal (GNOME default, Flatpak sandbox, etc.)
+        # 6. Universal Safety Net: XDG Desktop Portal (GNOME default, Flatpak sandbox, etc.)
         try:
-            portal_path = cls._capture_via_portal()
+            portal_path = cls._capture_via_portal(interactive=True)
             if portal_path:
                 return portal_path
         except PortalTimeoutError:
@@ -105,7 +123,7 @@ class ScreenCapture:
         except Exception as e:
             logger.debug(f"Portal capture failed: {e}")
 
-        # 6. Secondary fallback for wlroots if desktop environment name didn't match
+        # 7. Secondary fallback for wlroots if desktop environment name didn't match
         if shutil.which("slurp") and shutil.which("grim"):
             try:
                 grim_path = cls._capture_via_grim_slurp()
@@ -114,7 +132,7 @@ class ScreenCapture:
             except Exception as e:
                 logger.debug(f"wlroots secondary fallback failed: {e}")
 
-        # 7. Secondary fallback for maim / scrot
+        # 8. Secondary fallback for maim / scrot
         if shutil.which("maim"):
             try:
                 return cls._capture_via_maim()
@@ -132,11 +150,76 @@ class ScreenCapture:
             "Ensure XDG Desktop Portal, gnome-screenshot, slurp+grim, or maim is installed."
         )
 
-    @staticmethod
-    def _capture_via_portal() -> Optional[str]:
+    @classmethod
+    def _capture_fullscreen_snapshot(cls) -> Optional[str]:
         """
-        Calls org.freedesktop.portal.Screenshot over D-Bus with interactive mode.
-        Guarded with a 120-second timeout.
+        Captures the entire screen silently to a temporary file.
+        Used as the frozen background for the GTK4 sniper overlay.
+        """
+        is_wayland = bool(os.environ.get("WAYLAND_DISPLAY"))
+        is_x11 = bool(os.environ.get("DISPLAY")) and not is_wayland
+        desktop = os.environ.get("XDG_CURRENT_DESKTOP", "").lower()
+
+        # 1. Sway / Hyprland (grim captures fullscreen instantly)
+        if is_wayland and any(d in desktop for d in ("sway", "hyprland", "wayfire", "river")):
+            if shutil.which("grim"):
+                temp_path = _create_secure_temp_file(prefix="glyph_full_", suffix=".png")
+                try:
+                    proc = subprocess.run(["grim", temp_path], timeout=5)
+                    if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                        return temp_path
+                except Exception as e:
+                    logger.debug(f"grim fullscreen capture failed: {e}")
+                if os.path.exists(temp_path):
+                    try:
+                        os.remove(temp_path)
+                    except OSError:
+                        pass
+
+        # 2. X11 desktops (maim / scrot)
+        if is_x11:
+            if shutil.which("maim"):
+                temp_path = _create_secure_temp_file(prefix="glyph_full_", suffix=".png")
+                try:
+                    proc = subprocess.run(["maim", temp_path], timeout=5)
+                    if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                        return temp_path
+                except Exception as e:
+                    logger.debug(f"maim fullscreen capture failed: {e}")
+                if os.path.exists(temp_path):
+                    try:
+                        os.remove(temp_path)
+                    except OSError:
+                        pass
+
+            if shutil.which("scrot"):
+                temp_path = _create_secure_temp_file(prefix="glyph_full_", suffix=".png")
+                try:
+                    proc = subprocess.run(["scrot", temp_path], timeout=5)
+                    if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                        return temp_path
+                except Exception as e:
+                    logger.debug(f"scrot fullscreen capture failed: {e}")
+                if os.path.exists(temp_path):
+                    try:
+                        os.remove(temp_path)
+                    except OSError:
+                        pass
+
+        # 3. Universal XDG Desktop Portal (GNOME, KDE Plasma, Flatpak)
+        try:
+            return cls._capture_via_portal(interactive=False)
+        except Exception as e:
+            logger.debug(f"Non-interactive portal capture failed: {e}")
+            return None
+
+
+    @staticmethod
+    def _capture_via_portal(interactive: bool = True) -> Optional[str]:
+        """
+        Calls org.freedesktop.portal.Screenshot over D-Bus.
+        When interactive=True, opens compositor's interactive selection UI (120s timeout).
+        When interactive=False, silently captures fullscreen snapshot for sniper overlay (10s timeout).
         """
         bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         proxy = Gio.DBusProxy.new_sync(
@@ -162,8 +245,9 @@ class ScreenCapture:
                 loop.quit()
             return False
 
-        # Set 120-second portal timeout guard
-        timeout_source_id = GLib.timeout_add_seconds(120, on_timeout)
+        # Timeout guard: 120s for interactive, 10s for silent background capture
+        timeout_seconds = 120 if interactive else 10
+        timeout_source_id = GLib.timeout_add_seconds(timeout_seconds, on_timeout)
 
         def on_signal(connection, sender_name, object_path, interface_name, signal_name, parameters, user_data):
             if signal_name == "Response" and (object_path == expected_path or token in object_path):
@@ -190,7 +274,7 @@ class ScreenCapture:
 
         # Build options dictionary
         options = {
-            "interactive": GLib.Variant("b", True),
+            "interactive": GLib.Variant("b", interactive),
             "handle_token": GLib.Variant("s", token)
         }
 

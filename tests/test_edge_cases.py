@@ -237,6 +237,39 @@ and narrow columns."""
         result = ScreenCapture._capture_via_spectacle()
         self.assertIsNone(result)
 
+    # -------------------------------------------------------------------------
+    # 7. Sniper Overlay Geometry & Edge Cases
+    # -------------------------------------------------------------------------
+    def test_sniper_crop_box_normal_drag(self):
+        """Tests standard top-left to bottom-right drag coordinate calculation."""
+        from glyph.ui.sniper import calculate_crop_box
+        box = calculate_crop_box(100.0, 150.0, 400.0, 350.0, max_w=1920, max_h=1080)
+        self.assertEqual(box, (100, 150, 300, 200))
+
+    def test_sniper_crop_box_reverse_drag(self):
+        """Tests reverse drag (bottom-right to top-left) normalization."""
+        from glyph.ui.sniper import calculate_crop_box
+        box = calculate_crop_box(400.0, 350.0, 100.0, 150.0, max_w=1920, max_h=1080)
+        self.assertEqual(box, (100, 150, 300, 200))
+
+    def test_sniper_crop_box_boundary_clamping(self):
+        """Tests that drag coordinates extending beyond screen dimensions are clamped."""
+        from glyph.ui.sniper import calculate_crop_box
+        box = calculate_crop_box(-50.0, -20.0, 2500.0, 1500.0, max_w=1920, max_h=1080)
+        self.assertEqual(box, (0, 0, 1920, 1080))
+
+    def test_sniper_crop_box_rejects_micro_clicks(self):
+        """Tests that accidental tiny clicks (< 5px) are rejected as None."""
+        from glyph.ui.sniper import calculate_crop_box
+        box = calculate_crop_box(100.0, 100.0, 102.0, 103.0, max_w=1920, max_h=1080, min_size=5)
+        self.assertIsNone(box)
+
+    def test_sniper_crop_nonexistent_file(self):
+        """Tests that interactive_sniper_crop returns None when given an invalid file."""
+        from glyph.ui.sniper import interactive_sniper_crop
+        result = interactive_sniper_crop("/tmp/nonexistent_screen_shot_12345.png")
+        self.assertIsNone(result)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
