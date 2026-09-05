@@ -109,10 +109,32 @@ class TextEditorWindow(Adw.ApplicationWindow):
 
         self._update_stats()
 
-        # Keyboard shortcut controller (Ctrl+Enter to save, Escape to cancel)
+        # 1. Capture-phase Keyboard shortcut controller (intercepts before TextView consumes Return)
         key_controller = Gtk.EventControllerKey()
+        key_controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
         key_controller.connect("key-pressed", self._on_key_pressed)
         self.add_controller(key_controller)
+
+        # 2. Native GTK4 ShortcutController for robust accelerator dispatch
+        shortcut_controller = Gtk.ShortcutController.new()
+        shortcut_controller.set_scope(Gtk.ShortcutScope.LOCAL)
+
+        action_confirm = Gtk.CallbackAction.new(lambda w, a: (self._on_confirm(None), True)[1])
+        action_cancel = Gtk.CallbackAction.new(lambda w, a: (self._on_cancel(None), True)[1])
+
+        shortcut_controller.add_shortcut(Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("<Control>Return"),
+            action_confirm
+        ))
+        shortcut_controller.add_shortcut(Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("<Control>KP_Enter"),
+            action_confirm
+        ))
+        shortcut_controller.add_shortcut(Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("Escape"),
+            action_cancel
+        ))
+        self.add_controller(shortcut_controller)
 
     def _get_current_text(self) -> str:
         start_iter = self.text_buffer.get_start_iter()
@@ -140,7 +162,8 @@ class TextEditorWindow(Adw.ApplicationWindow):
         if keyval == Gdk.KEY_Escape:
             self._on_cancel(None)
             return True
-        if (state & Gdk.ModifierType.CONTROL_MASK) and keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter):
+        is_ctrl = bool(state & Gdk.ModifierType.CONTROL_MASK)
+        if is_ctrl and keyval in (Gdk.KEY_Return, Gdk.KEY_KP_Enter, Gdk.KEY_ISO_Enter):
             self._on_confirm(None)
             return True
         return False

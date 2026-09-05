@@ -270,6 +270,58 @@ and narrow columns."""
         result = interactive_sniper_crop("/tmp/nonexistent_screen_shot_12345.png")
         self.assertIsNone(result)
 
+    # -------------------------------------------------------------------------
+    # 8. Editor Modal Key Shortcuts
+    # -------------------------------------------------------------------------
+    def test_editor_ctrl_enter_triggers_confirm(self):
+        """Tests that Ctrl+Enter in TextEditorWindow triggers confirmation."""
+        import gi
+        gi.require_version("Gtk", "4.0")
+        gi.require_version("Adw", "1")
+        from gi.repository import Gtk, Adw, Gdk
+        from glyph.ui.editor import TextEditorWindow
+
+        Adw.init()
+        confirmed = []
+        win = TextEditorWindow(None, "hello", lambda t: confirmed.append(t))
+        
+        # Test Return
+        res = win._on_key_pressed(None, Gdk.KEY_Return, 0, Gdk.ModifierType.CONTROL_MASK)
+        self.assertTrue(res)
+        self.assertEqual(confirmed, ["hello"])
+
+    def test_editor_escape_triggers_cancel(self):
+        """Tests that Escape in TextEditorWindow triggers cancellation."""
+        import gi
+        gi.require_version("Gtk", "4.0")
+        gi.require_version("Adw", "1")
+        from gi.repository import Gtk, Adw, Gdk
+        from glyph.ui.editor import TextEditorWindow
+
+        Adw.init()
+        cancelled = []
+        win = TextEditorWindow(None, "hello", lambda t: cancelled.append(t))
+        
+        res = win._on_key_pressed(None, Gdk.KEY_Escape, 0, 0)
+        self.assertTrue(res)
+        self.assertEqual(cancelled, [None])
+
+    def test_editor_regular_key_passes_through(self):
+        """Tests that regular keys (like letter 'a') are not intercepted."""
+        import gi
+        gi.require_version("Gtk", "4.0")
+        gi.require_version("Adw", "1")
+        from gi.repository import Gtk, Adw, Gdk
+        from glyph.ui.editor import TextEditorWindow
+
+        Adw.init()
+        results = []
+        win = TextEditorWindow(None, "hello", lambda t: results.append(t))
+        
+        res = win._on_key_pressed(None, Gdk.KEY_a, 0, 0)
+        self.assertFalse(res)
+        self.assertEqual(results, [])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
