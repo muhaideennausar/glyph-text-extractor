@@ -38,7 +38,7 @@ class TestConfigManager(unittest.TestCase):
         self.assertEqual(cfg["version"], 1)
         self.assertEqual(cfg["general"]["default_mode"], "instant")
         self.assertEqual(cfg["ocr"]["default_language"], "eng")
-        self.assertEqual(cfg["ocr"]["default_psm"], 6)
+        self.assertEqual(cfg["ocr"]["default_psm"], 3)
 
         # Verify 0o600 file permissions
         file_stat = os.stat(self.config_path)
@@ -68,7 +68,7 @@ class TestConfigManager(unittest.TestCase):
         # Retained factory defaults
         self.assertTrue(cfg["general"]["auto_copy_to_clipboard"])
         self.assertTrue(cfg["general"]["show_notifications"])
-        self.assertEqual(cfg["ocr"]["default_psm"], 6)
+        self.assertEqual(cfg["ocr"]["default_psm"], 3)
         self.assertEqual(cfg["editor"]["window_width"], 640)
 
     def test_corrupt_json_fallback(self):
@@ -100,7 +100,7 @@ class TestConfigManager(unittest.TestCase):
 
         cfg = self.manager.load_config()
         self.assertEqual(cfg["general"]["default_mode"], "instant")
-        self.assertEqual(cfg["ocr"]["default_psm"], 6)
+        self.assertEqual(cfg["ocr"]["default_psm"], 3)
         self.assertEqual(cfg["editor"]["window_width"], 640)
 
     def test_editor_window_size_persistence(self):

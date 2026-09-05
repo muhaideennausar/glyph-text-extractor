@@ -24,7 +24,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "ocr": {
         "default_engine": "tesseract",
         "default_language": "eng",
-        "default_psm": 6,
+        "default_psm": 3,
         "enable_adaptive_scaling": True,
     },
     "editor": {

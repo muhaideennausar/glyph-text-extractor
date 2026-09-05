@@ -25,7 +25,7 @@ class TesseractEngine(BaseOCREngine):
     display_name: str = "Tesseract 5 (Local/Fast)"
     description: str = "Default engine: instant, low-memory, runs on any hardware."
 
-    def __init__(self, language: str = "eng", default_psm: int = 6):
+    def __init__(self, language: str = "eng", default_psm: int = 3):
         self.language = language
         self.default_psm = default_psm
         self._check_installed()
@@ -71,14 +71,16 @@ class TesseractEngine(BaseOCREngine):
         image.save(byte_buffer, format="PNG")
         image_bytes = byte_buffer.getvalue()
 
-        # Try primary PSM
+        # Try primary PSM (PSM 3 preserves paragraph breaks and multi-statement layouts)
         text = self._run_tesseract(image_bytes, target_psm)
 
-        # Smart fallback if PSM 6 produced nothing
-        if not text and target_psm == 6:
-            text = self._run_tesseract(image_bytes, psm=3)
-            if not text:
-                text = self._run_tesseract(image_bytes, psm=7)
+        # Smart fallback cascade if primary PSM produced nothing
+        if not text:
+            for fallback_psm in [6, 11, 7]:
+                if fallback_psm != target_psm:
+                    text = self._run_tesseract(image_bytes, psm=fallback_psm)
+                    if text:
+                        break
 
         return self._clean_text(text)
 
