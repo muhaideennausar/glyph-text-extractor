@@ -48,6 +48,17 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.4" date="2026-09-05">
+      <description>
+        <p>Reliable desktop notifications, statement break OCR preservation, and cross-distro conflict detection.</p>
+        <ul>
+          <li>Preserved statement breaks and paragraph layout spacing by defaulting OCR page segmentation mode to auto (PSM 3) with resilient multi-mode fallbacks</li>
+          <li>Hardened desktop notifications with XML/HTML character escaping and direct absolute icon path resolution across desktop environments</li>
+          <li>Added cross-distro dual-install collision detection and diagnostic warnings in CLI and installer</li>
+          <li>Optimized desktop shortcut handler to resolve running executable paths dynamically</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.3" date="2026-09-05">
       <description>
         <p>Streamlined capture pipeline, refreshed brand identity, and enhanced GNOME Wayland integration.</p>
