@@ -35,6 +35,7 @@
 ## 📸 Screenshots
 
 ### Mode A: Instant Sniper Screen Crop
+
 Crop any portion of your screen to extract and copy text instantly to your clipboard.
 
 <div align="center">
@@ -42,6 +43,7 @@ Crop any portion of your screen to extract and copy text instantly to your clipb
 </div>
 
 ### Mode B: Interactive Review & Formatting Modal
+
 Clean, inspect, join broken PDF lines, and trim whitespace before copying.
 
 <div align="center">
