@@ -261,6 +261,14 @@ class GnomeShortcutManager:
                     ["gsettings", "set", cls.SCHEMA_ROOT, "custom-keybindings", formatted],
                     stderr=subprocess.DEVNULL,
                 )
+
+            # Pre-grant silent screenshot permission in XDG PermissionStore for GNOME Wayland
+            try:
+                from glyph.capture import ensure_portal_screenshot_permission
+                ensure_portal_screenshot_permission()
+            except Exception:
+                pass
+
             return True
         except Exception as e:
             logger.error(f"Failed to set GNOME shortcut {target.identifier}: {e}")

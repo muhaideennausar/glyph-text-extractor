@@ -11,6 +11,40 @@ echo "=== Installing Glyph - Text Extractor ==="
 
 mkdir -p "$INSTALL_DIR" "$BIN_DIR" "$DESKTOP_DIR" "$METAINFO_DIR"
 
+# Pre-flight runtime dependency check
+MISSING_PKGS=()
+if ! python3 -c "import PIL" 2>/dev/null; then
+    MISSING_PKGS+=("python3-pil")
+fi
+if ! python3 -c "import gi; gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')" 2>/dev/null; then
+    MISSING_PKGS+=("python3-gi" "gir1.2-gtk-4.0" "gir1.2-adw-1")
+fi
+if ! command -v tesseract >/dev/null 2>&1; then
+    MISSING_PKGS+=("tesseract-ocr" "tesseract-ocr-eng")
+fi
+if [ -n "$WAYLAND_DISPLAY" ] && ! command -v wl-copy >/dev/null 2>&1; then
+    MISSING_PKGS+=("wl-clipboard")
+fi
+
+if [ ${#MISSING_PKGS[@]} -gt 0 ]; then
+    echo "⚠️  Missing runtime dependencies detected:"
+    for pkg in "${MISSING_PKGS[@]}"; do
+        echo "   - $pkg"
+    done
+    echo ""
+    echo "Please install them using your package manager:"
+    echo "  Ubuntu/Debian: sudo apt update && sudo apt install -y ${MISSING_PKGS[*]}"
+    echo "  Fedora:        sudo dnf install -y python3-pillow python3-gobject gtk4 libadwaita tesseract wl-clipboard"
+    echo "  Arch:          sudo pacman -S --needed python-pillow python-gobject gtk4 libadwaita tesseract wl-clipboard"
+    echo ""
+fi
+
+# Pre-seed XDG Desktop Portal screenshot permission in user session
+if command -v busctl >/dev/null 2>&1; then
+    busctl --user call org.freedesktop.impl.portal.PermissionStore /org/freedesktop/impl/portal/PermissionStore org.freedesktop.impl.portal.PermissionStore SetPermission sbssas screenshot true screenshot io.github.muhaideennausar.Glyph 1 yes 2>/dev/null || true
+    busctl --user call org.freedesktop.impl.portal.PermissionStore /org/freedesktop/impl/portal/PermissionStore org.freedesktop.impl.portal.PermissionStore SetPermission sbssas devices true screenshot io.github.muhaideennausar.Glyph 1 yes 2>/dev/null || true
+fi
+
 # Copy package files from src/glyph
 rm -rf "$INSTALL_DIR/glyph"
 cp -r src/glyph "$INSTALL_DIR/"
@@ -93,11 +127,17 @@ echo "✓ Desktop entry created at $DESKTOP_DIR/io.github.muhaideennausar.Glyph.
 echo "✓ AppStream metainfo installed at $METAINFO_DIR/io.github.muhaideennausar.Glyph.metainfo.xml"
 echo "✓ High-resolution & symbolic icons installed to $ICONS_DIR"
 
-# Configure global desktop shortcuts interactively
-if [ -t 0 ]; then
-    "$BIN_DIR/glyph" --setup-shortcuts || true
+# Configure global desktop shortcuts interactively (if Python dependencies are satisfied)
+if python3 -c "import PIL, gi" 2>/dev/null; then
+    if [ -t 0 ]; then
+        "$BIN_DIR/glyph" --setup-shortcuts || true
+    else
+        "$BIN_DIR/glyph" --setup-shortcuts -y || true
+    fi
 else
-    "$BIN_DIR/glyph" --setup-shortcuts -y || true
+    echo ""
+    echo "ℹ️  Note: Global shortcuts can be set up after installing the dependencies above by running:"
+    echo "   glyph --setup-shortcuts"
 fi
 
 echo ""

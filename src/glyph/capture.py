@@ -34,6 +34,42 @@ def _create_secure_temp_file(prefix: str = "glyph_capture_", suffix: str = ".png
     return path
 
 
+def ensure_portal_screenshot_permission(app_id: str = "io.github.muhaideennausar.Glyph") -> bool:
+    """Pre-grants screenshot permission in the XDG Permission Store.
+
+    This ensures xdg-desktop-portal marks permission_store_checked=True,
+    allowing xdg-desktop-portal-gnome to take 100% silent background snapshots
+    without prompting 'Share this screenshot with...'.
+    """
+    try:
+        bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        proxy = Gio.DBusProxy.new_sync(
+            bus,
+            Gio.DBusProxyFlags.NONE,
+            None,
+            "org.freedesktop.impl.portal.PermissionStore",
+            "/org/freedesktop/impl/portal/PermissionStore",
+            "org.freedesktop.impl.portal.PermissionStore",
+            None,
+        )
+        for table in ("screenshot", "devices"):
+            try:
+                proxy.call_sync(
+                    "SetPermission",
+                    GLib.Variant("(sbsas)", (table, True, "screenshot", app_id, ["yes"])),
+                    Gio.DBusCallFlags.NONE,
+                    1500,
+                    None,
+                )
+            except Exception:
+                pass
+        logger.debug(f"Pre-authorized screenshot permission for '{app_id}' in XDG PermissionStore.")
+        return True
+    except Exception as e:
+        logger.debug(f"PermissionStore pre-authorization skipped or failed: {e}")
+        return False
+
+
 class ScreenCapture:
     """
     Captures user-selected screen areas interactively across Wayland and X11 desktops.
@@ -165,6 +201,10 @@ class ScreenCapture:
 
         # 3. Universal XDG Desktop Portal (GNOME, KDE Plasma, Flatpak)
         try:
+            # Pre-grant permission in XDG PermissionStore to enable silent captures
+            ensure_portal_screenshot_permission()
+            # Brief settle delay to allow GNOME Overview animations or shortcut key releases to settle
+            time.sleep(0.25)
             return cls._capture_via_portal(interactive=False)
         except Exception as e:
             logger.debug(f"Non-interactive portal capture failed: {e}")
@@ -176,7 +216,7 @@ class ScreenCapture:
         """
         Calls org.freedesktop.portal.Screenshot over D-Bus.
         When interactive=True, opens compositor's interactive selection UI (120s timeout).
-        When interactive=False, silently captures fullscreen snapshot for sniper overlay (10s timeout).
+        When interactive=False, silently captures fullscreen snapshot for sniper overlay (12s timeout).
         """
         bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         proxy = Gio.DBusProxy.new_sync(
@@ -202,8 +242,8 @@ class ScreenCapture:
                 loop.quit()
             return False
 
-        # Timeout guard: 120s for interactive, 2s for silent background capture
-        timeout_seconds = 120 if interactive else 2
+        # Timeout guard: 120s for interactive, 12s for silent background capture
+        timeout_seconds = 120 if interactive else 12
         timeout_source_id = GLib.timeout_add_seconds(timeout_seconds, on_timeout)
 
         def on_signal(connection, sender_name, object_path, interface_name, signal_name, parameters, user_data):
@@ -258,7 +298,7 @@ class ScreenCapture:
         bus.signal_unsubscribe(sub_id)
 
         if result_holder["timed_out"]:
-            raise PortalTimeoutError("XDG Desktop Portal screenshot timed out after 120 seconds.")
+            raise PortalTimeoutError(f"XDG Desktop Portal screenshot timed out after {timeout_seconds} seconds.")
 
         if result_holder["cancelled"] or not result_holder["path"]:
             return None

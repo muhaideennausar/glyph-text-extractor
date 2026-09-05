@@ -23,7 +23,7 @@ if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
 from glyph.preprocess import ImagePreprocessor
-from glyph.capture import ScreenCapture
+from glyph.capture import ScreenCapture, ensure_portal_screenshot_permission
 from glyph.clipboard import ClipboardManager, NotificationManager
 from glyph.app import run_pipeline
 from glyph.ui.editor import format_single_line, format_trim_whitespace
@@ -175,6 +175,19 @@ class TestEdgeCasesAndFailureModes(unittest.TestCase):
 
         result = ScreenCapture._capture_via_portal()
         self.assertIsNone(result)
+
+    @patch("glyph.capture.Gio.bus_get_sync")
+    @patch("glyph.capture.Gio.DBusProxy.new_sync")
+    def test_ensure_portal_screenshot_permission(self, mock_proxy_cls, mock_bus_cls):
+        """Tests that ensure_portal_screenshot_permission calls SetPermission on PermissionStore."""
+        mock_bus = MagicMock()
+        mock_bus_cls.return_value = mock_bus
+        mock_proxy = MagicMock()
+        mock_proxy_cls.return_value = mock_proxy
+
+        res = ensure_portal_screenshot_permission("io.github.muhaideennausar.Glyph")
+        self.assertTrue(res)
+        self.assertEqual(mock_proxy.call_sync.call_count, 2)
 
     # -------------------------------------------------------------------------
     # 5. Multi-line Formatting (PDF Clippings & Whitespace)
