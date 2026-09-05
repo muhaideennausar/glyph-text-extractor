@@ -313,3 +313,4 @@ def interactive_sniper_crop(fullscreen_image_path: str) -> Optional[str]:
     except Exception as e:
         logger.error(f"Failed to crop selected sniper region: {e}")
         return None
+

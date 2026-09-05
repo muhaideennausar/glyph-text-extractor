@@ -72,6 +72,28 @@ flatpak run io.github.glyph.Glyph
 
 ---
 
+## 🔐 First-Time Launch & Wayland Permissions
+
+When you trigger Glyph (`glyph --grab`) for the first time on modern GNOME (Ubuntu 24.04+, Fedora 39+, etc. running Wayland), your desktop will present a system security dialog:
+
+<div align="center">
+  <blockquote>
+    <strong>Allow Apps to Take Screenshots?</strong><br />
+    <em>An app wants to take screenshots at any time</em><br />
+    <code>[Deny]</code> &nbsp; <code><strong>[Allow]</strong></code>
+  </blockquote>
+</div>
+
+### Why does this appear?
+* **Wayland Security Isolation:** On modern Wayland compositors, applications are strictly isolated from one another so that background programs cannot silently spy on your screen, passwords, or personal data.
+* **Silent Sniper Snapshot:** To provide an instant screen freeze with Glyph's custom GTK4 sniper overlay—bypassing GNOME's camera shutter sound, flash, and duplicate OS notifications—Glyph requests a background screenshot via the standard XDG Desktop Portal (`org.freedesktop.portal.Screenshot`).
+* **One-Time Authorization:** Click **Allow**. GNOME permanently remembers your decision in **Settings → Privacy & Security → Screen Capture**. All future extractions will launch instantly without any prompts.
+
+> [!TIP]
+> If you ever accidentally click "Deny", you can re-enable permission at any time by opening **Settings → Privacy & Security → Screen Capture** and enabling the permission.
+
+---
+
 ## ⌨️ Set Up Global Keyboard Shortcuts
 
 To make Glyph feel like a built-in OS tool (similar to PowerToys Text Extractor on Windows):

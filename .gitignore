@@ -41,3 +41,6 @@ htmlcov/
 *~
 .DS_Store
 
+# Internal development notes & scratch docs (preserve only official README)
+*.md
+!README.md
