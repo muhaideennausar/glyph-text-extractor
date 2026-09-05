@@ -8,6 +8,7 @@
 [![CI](https://github.com/muhaideennausar/glyph-text-extractor/actions/workflows/ci.yml/badge.svg)](https://github.com/muhaideennausar/glyph-text-extractor/actions)
 [![Latest Release](https://img.shields.io/github/v/release/muhaideennausar/glyph-text-extractor?color=blue&label=release)](https://github.com/muhaideennausar/glyph-text-extractor/releases/latest)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
+[![Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-orange.svg)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/platform-Wayland%20%7C%20X11-green.svg)](#)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](#)
 
@@ -25,9 +26,15 @@
 
 - **Instant Execution:** Snappy background pipeline with in-memory image streaming and lazy UI loading (~20ms latency).
 - **Two Operating Modes:**
-  - **Mode A (Instant):** Crop a screen region and have text copied directly to your clipboard with a desktop notification.
-  - **Mode B (Review & Edit):** Clean, inspect, join broken PDF lines, or trim whitespace in a native Libadwaita modal before copying.
-- **Statement & Paragraph Layout Preservation:** Fully automatic page segmentation (`PSM 3`) with resilient fallback cascades (`6`, `11`, `7`) preserves statement breaks (`\n\n`), code indentation, and multi-paragraph layout structure.
+  - **Mode B (Review & Edit — Default):** Clean, inspect, join broken PDF lines, or trim whitespace in a native Libadwaita modal before copying. Triggered by default with `Super + Shift + T` or `glyph --grab`.
+  - **Mode A (Instant Extract):** Crop a screen region and have text copied directly to your clipboard with a desktop notification (`Super + Shift + I` or `glyph --grab --instant`).
+- **Geometry-Aware Smart PSM Detection:** Dynamically switches Page Segmentation Mode based on crop dimensions:
+  - Single-line crops (aspect ratio $\ge 3.0$): Automatically runs **PSM 7** (single line) to prevent broken URLs or commands.
+  - Standard text snippets (height $\le 300\text{px}$): Runs **PSM 6** (uniform block).
+  - Multi-paragraph / page clippings: Runs **PSM 3** (full automatic page segmentation).
+- **Next-Gen Preprocessing:**
+  - **Otsu Binarization Fallback:** Multi-pass recognition cascade triggers an automated Otsu binarization pass on low-contrast or noisy backgrounds.
+  - **Unsharp Mask Edge Sharpening:** Sharpens fine antialiased screen fonts for crystal-clear character boundaries.
 - **Compositor Agnostic:** Works seamlessly on GNOME, KDE Plasma, Hyprland, Sway, XFCE, Cinnamon, and i3 via standard XDG Desktop Portals or native CLI grabbers (`grim`, `slurp`, `maim`, `scrot`).
 - **Reliable Desktop Notifications:** Sanitized FreeDesktop notifications with XML/HTML character escaping and branded application icons across all desktop environments.
 - **Offline & Private:** Zero telemetry, no cloud APIs, private `0o600` temporary capture permissions with instant file shredding.
@@ -228,38 +235,39 @@ When you trigger Glyph - Text Extractor (`glyph --grab`) for the first time on m
 
 If you prefer to configure shortcuts manually via your desktop environment settings:
 
-### GNOME / Ubuntu (Wayland or X11)
+### GNOME / Ubuntu / Fedora (Wayland or X11)
 
 1. Open **Settings** → **Keyboard** → **View and Customize Shortcuts** → **Custom Shortcuts**.
 2. Click **+** to add a new shortcut:
-   - **Instant Capture (Mode A):**
-     - **Name:** `Glyph - Text Extractor`
+   - **Review & Edit Modal (Mode B — Default):**
+     - **Name:** `Glyph - Review & Edit`
      - **Command:** `glyph --grab`
      - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
-   - **Review & Edit (Mode B):**
-     - **Name:** `Glyph - Text Extractor (Review & Edit)`
-     - **Command:** `glyph --grab --edit`
-     - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd>
+   - **Instant Capture to Clipboard (Mode A):**
+     - **Name:** `Glyph - Instant Text Extractor`
+     - **Command:** `glyph --grab --instant`
+     - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd>
 
 ### Hyprland (`~/.config/hypr/hyprland.conf`)
 
 ```ini
 bind = SUPER SHIFT, T, exec, glyph --grab
-bind = SUPER SHIFT, E, exec, glyph --grab --edit
+bind = SUPER SHIFT, I, exec, glyph --grab --instant
 ```
 
-### Sway (`~/.config/sway/config`)
+### Sway (`~/.config/sway/config`) / i3 (`~/.config/i3/config`)
 
 ```ini
 bindsym $mod+Shift+t exec glyph --grab
-bindsym $mod+Shift+e exec glyph --grab --edit
+bindsym $mod+Shift+i exec glyph --grab --instant
 ```
 
 ### KDE Plasma
 
 1. Open **System Settings** → **Shortcuts** → **Custom Shortcuts**.
 2. Add **Edit** → **New** → **Global Shortcut** → **Command/URL**.
-3. Set Trigger to <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> and Command to `glyph --grab`.
+3. Set Trigger to <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> and Command to `glyph --grab` (Review & Edit).
+4. *(Optional)* Add a second shortcut for <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> and Command `glyph --grab --instant` (Instant Mode A).
 
 ---
 
@@ -270,15 +278,18 @@ bindsym $mod+Shift+e exec glyph --grab --edit
 glyph --version
 glyph -v
 
-# Instant interactive screen capture and copy (Mode A)
+# Interactive screen capture with review & edit modal (Mode B — Default)
 glyph --grab
-glyph -g
+glyph
 
-# Interactive screen capture with review & edit modal (Mode B)
+# Instant screen capture and direct copy to clipboard (Mode A)
+glyph --grab --instant
+glyph -i
+
+# Force open in Review & Edit modal
 glyph --grab --edit
-glyph -g -e
 
-# Extract text directly from an existing image
+# Extract text directly from an existing image file
 glyph -f document_scan.png
 
 # Extract in another language (requires tesseract-ocr-<lang>)
@@ -286,23 +297,32 @@ glyph --grab -l deu   # German
 glyph --grab -l fra   # French
 glyph --grab -l spa   # Spanish
 
-# Custom Page Segmentation Mode (defaults to PSM 3 for layout preservation)
-glyph --grab --psm 3  # Fully automatic page segmentation (default)
+# Custom Page Segmentation Mode (defaults to smart geometry-based PSM)
+glyph --grab --psm 3  # Fully automatic page segmentation
 glyph --grab --psm 6  # Assume a single uniform block of text
 glyph --grab --psm 7  # Treat image as a single text line
 glyph --grab --psm 11 # Find as much text as possible (sparse text)
 
-# Scale factor for low-resolution captures (default: 2.0x upscale)
-glyph --grab --scale 3.0
+# Scale factor for low-resolution captures (default: adaptive 3.0x upscale)
+glyph --grab --scale 2.0
 
 # Print extracted text directly to stdout
 glyph --grab --stdout
 
-# Suppress desktop notifications
+# Suppress or force desktop notifications
 glyph --grab --no-notify
+glyph --grab --notify
 
-# Debug diagnostics (detailed image and OCR logs)
+# Copy control
+glyph --grab --no-copy
+
+# Debug diagnostics (detailed image and OCR pipeline logs)
 glyph --grab --debug
+
+# Interactively configure or remove global shortcuts
+glyph --setup-shortcuts
+glyph --setup-shortcuts -y   # Non-interactive auto-yes
+glyph --remove-shortcuts
 ```
 
 ---
@@ -313,31 +333,36 @@ Glyph follows the XDG Base Directory specification. Configuration settings are a
 
 ```json
 {
+  "version": 2,
   "general": {
     "default_mode": "edit",
-    "notify_on_success": true,
-    "notify_on_empty": true
+    "auto_copy_to_clipboard": true,
+    "show_notifications": true
   },
   "ocr": {
     "default_engine": "tesseract",
     "default_language": "eng",
     "default_psm": 3,
-    "upscale_factor": 2.0
+    "enable_adaptive_scaling": true,
+    "smart_psm": true,
+    "enhance_edges": false,
+    "preserve_spaces": true
   },
   "editor": {
     "window_width": 640,
     "window_height": 440,
-    "show_char_count": true
+    "remember_window_size": true
   }
 }
 ```
 
-### Page Segmentation Modes (`default_psm`)
+### Page Segmentation Modes (`default_psm` & `smart_psm`)
 
-- **`3` (Default):** Fully automatic page segmentation without OSD (preserves statement breaks, code blocks, and multi-paragraph layout).
-- **`6`:** Assume a single uniform block of text.
-- **`7`:** Treat the image as a single text line.
-- **`11`:** Sparse text (finds as much text as possible in no particular order).
+- **`smart_psm: true` (Default):** Dynamically analyzes the crop aspect ratio and dimensions:
+  - Single lines ($\ge 3:1$ aspect ratio) $\to$ **PSM 7**
+  - Text blocks ($\le 300\text{px}$ height) $\to$ **PSM 6**
+  - Full pages $\to$ **PSM 3**
+- **Manual override:** Set `"smart_psm": false` and specify `"default_psm": 3` or pass `--psm <N>` via CLI.
 
 Precedence order:
 `CLI Flags > ~/.config/glyph/config.json > Factory Defaults`
@@ -351,6 +376,12 @@ Glyph comes with a comprehensive test suite of 65 unit and edge-case tests cover
 ```bash
 python3 -m unittest discover -s tests -v
 ```
+
+---
+
+## 📜 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes, enhancements, and fixes across all releases.
 
 ---
 
