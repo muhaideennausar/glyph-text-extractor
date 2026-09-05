@@ -95,35 +95,41 @@ class NotificationManager:
     @classmethod
     def _get_app_icon(cls) -> str:
         """Returns the best available application icon identifier or path."""
-        # 1. Check if the icon is installed in standard system icon paths
+        # 1. Prefer crisp PNG or scalable SVG installed in system or user icon paths
         for icon_path in [
-            f"/usr/share/icons/hicolor/scalable/apps/{cls.APP_ID}.svg",
+            f"/usr/share/icons/hicolor/128x128/apps/{cls.APP_ID}.png",
+            f"/usr/share/icons/hicolor/256x256/apps/{cls.APP_ID}.png",
             f"/usr/share/icons/hicolor/512x512/apps/{cls.APP_ID}.png",
+            f"/usr/share/icons/hicolor/scalable/apps/{cls.APP_ID}.svg",
+            os.path.expanduser(f"~/.local/share/icons/hicolor/128x128/apps/{cls.APP_ID}.png"),
+            os.path.expanduser(f"~/.local/share/icons/hicolor/512x512/apps/{cls.APP_ID}.png"),
+            os.path.expanduser(f"~/.local/share/icons/hicolor/scalable/apps/{cls.APP_ID}.svg"),
             f"/usr/local/share/icons/hicolor/scalable/apps/{cls.APP_ID}.svg",
         ]:
-            if os.path.exists(icon_path):
-                return cls.APP_ID
+            if os.path.isfile(icon_path):
+                return icon_path
 
         # 2. Check local repo / portable layout assets
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        candidate_svg = os.path.join(base_dir, "assets", "icons", "scalable", f"{cls.APP_ID}.svg")
-        if os.path.exists(candidate_svg):
-            return candidate_svg
-        candidate_png = os.path.join(base_dir, "assets", "icons", "hicolor", "512x512", "apps", f"{cls.APP_ID}.png")
-        if os.path.exists(candidate_png):
-            return candidate_png
+        for candidate in [
+            os.path.join(base_dir, "assets", "icons", "hicolor", "128x128", "apps", f"{cls.APP_ID}.png"),
+            os.path.join(base_dir, "assets", "icons", "scalable", f"{cls.APP_ID}.svg"),
+        ]:
+            if os.path.isfile(candidate):
+                return candidate
 
-        # Fallback to the app ID
-        return cls.APP_ID
+        return "edit-copy"
 
     @classmethod
     def notify_success(cls, text: str) -> None:
         """Notifies the user that text was copied, previewing the first characters."""
+        import html
         preview = text.strip().replace("\n", " ")
         if len(preview) > 60:
             preview = preview[:57] + "..."
+        safe_preview = html.escape(preview)
 
-        body = f"Copied to clipboard:\n\"{preview}\""
+        body = f"Copied to clipboard:\n\"{safe_preview}\""
         cls._send(
             title="Glyph - Text Extractor",
             body=body,
@@ -138,7 +144,7 @@ class NotificationManager:
             title="Glyph - Text Extractor",
             body="No text detected in selected region.",
             icon=cls._get_app_icon(),
-            urgency="low"
+            urgency="normal"
         )
 
     @classmethod
@@ -160,10 +166,9 @@ class NotificationManager:
                 subprocess.run(
                     [
                         "notify-send",
-                        "-a", "Glyph",
+                        "-a", "Glyph - Text Extractor",
                         "-i", app_icon,
                         "-u", urgency,
-                        "-h", f"string:desktop-entry:{cls.APP_ID}",
                         title,
                         body
                     ],
@@ -189,14 +194,19 @@ class NotificationManager:
                 "org.freedesktop.Notifications",
                 None
             )
+            urgency_byte = 1
+            if urgency == "low":
+                urgency_byte = 0
+            elif urgency == "critical":
+                urgency_byte = 2
             hints = {
-                "desktop-entry": GLib.Variant("s", cls.APP_ID),
+                "urgency": GLib.Variant("y", urgency_byte),
             }
             proxy.call_sync(
                 "Notify",
                 GLib.Variant(
                     "(susssasa{sv}i)",
-                    ("Glyph", 0, app_icon, title, body, [], hints, 4000)
+                    ("Glyph - Text Extractor", 0, app_icon, title, body, [], hints, 4000)
                 ),
                 Gio.DBusCallFlags.NONE,
                 3000,
