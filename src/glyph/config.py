@@ -17,7 +17,7 @@ logger = logging.getLogger("glyph.config")
 DEFAULT_CONFIG: Dict[str, Any] = {
     "version": 1,
     "general": {
-        "default_mode": "instant",
+        "default_mode": "edit",
         "auto_copy_to_clipboard": True,
         "show_notifications": True,
     },

@@ -9,13 +9,13 @@ Type=Application
 Categories=Utility;
 Keywords=OCR;Screenshot;Text;Extract;Snipping;PowerToys;Capture;
 StartupNotify=false
-Actions=Capture;Editor;
-
-[Desktop Action Capture]
-Name=Capture & Copy
-Exec=glyph --grab
+Actions=Editor;Instant;
 
 [Desktop Action Editor]
 Name=Capture & Edit
-Exec=glyph --grab --edit
+Exec=glyph --grab
+
+[Desktop Action Instant]
+Name=Instant Capture & Copy
+Exec=glyph --grab --instant
 

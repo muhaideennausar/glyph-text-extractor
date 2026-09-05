@@ -268,7 +268,7 @@ def main() -> None:
     elif args.instant:
         edit_mode = False
     else:
-        edit_mode = (cfg.get("general", {}).get("default_mode", "instant") == "edit")
+        edit_mode = (cfg.get("general", {}).get("default_mode", "edit") == "edit")
 
     # Notifications
     if args.no_notify:

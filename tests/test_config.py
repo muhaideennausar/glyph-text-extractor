@@ -36,7 +36,7 @@ class TestConfigManager(unittest.TestCase):
 
         self.assertTrue(os.path.exists(self.config_path))
         self.assertEqual(cfg["version"], 1)
-        self.assertEqual(cfg["general"]["default_mode"], "instant")
+        self.assertEqual(cfg["general"]["default_mode"], "edit")
         self.assertEqual(cfg["ocr"]["default_language"], "eng")
         self.assertEqual(cfg["ocr"]["default_psm"], 3)
 
@@ -50,7 +50,7 @@ class TestConfigManager(unittest.TestCase):
         os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
         partial = {
             "general": {
-                "default_mode": "edit"
+                "default_mode": "instant"
             },
             "ocr": {
                 "default_language": "deu"
@@ -62,7 +62,7 @@ class TestConfigManager(unittest.TestCase):
         cfg = self.manager.load_config()
 
         # Overridden values
-        self.assertEqual(cfg["general"]["default_mode"], "edit")
+        self.assertEqual(cfg["general"]["default_mode"], "instant")
         self.assertEqual(cfg["ocr"]["default_language"], "deu")
 
         # Retained factory defaults
@@ -78,7 +78,7 @@ class TestConfigManager(unittest.TestCase):
             f.write("{invalid_json: true, unterminated string...")
 
         cfg = self.manager.load_config()
-        self.assertEqual(cfg["general"]["default_mode"], "instant")
+        self.assertEqual(cfg["general"]["default_mode"], "edit")
         self.assertEqual(cfg["ocr"]["default_language"], "eng")
 
     def test_sanitization_of_invalid_values(self):
@@ -99,7 +99,7 @@ class TestConfigManager(unittest.TestCase):
             json.dump(invalid_data, f)
 
         cfg = self.manager.load_config()
-        self.assertEqual(cfg["general"]["default_mode"], "instant")
+        self.assertEqual(cfg["general"]["default_mode"], "edit")
         self.assertEqual(cfg["ocr"]["default_psm"], 3)
         self.assertEqual(cfg["editor"]["window_width"], 640)
 

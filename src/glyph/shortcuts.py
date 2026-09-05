@@ -66,18 +66,18 @@ _GLYPH_BIN = _resolve_glyph_binary()
 
 DEFAULT_SHORTCUTS = [
     ShortcutTarget(
-        identifier="glyph-mode-a",
-        name="Glyph - Instant Text Extractor",
-        command=f"{_GLYPH_BIN} --grab",
-        binding="<Super><Shift>t",
-        description="Instant Mode A Screen OCR directly to clipboard",
-    ),
-    ShortcutTarget(
         identifier="glyph-mode-b",
         name="Glyph - Review & Edit",
-        command=f"{_GLYPH_BIN} --grab --edit",
-        binding="<Super><Shift>e",
-        description="Mode B Interactive Review & Edit modal",
+        command=f"{_GLYPH_BIN} --grab",
+        binding="<Super><Shift>t",
+        description="Mode B Interactive Review & Edit modal (Default)",
+    ),
+    ShortcutTarget(
+        identifier="glyph-mode-a",
+        name="Glyph - Instant Text Extractor",
+        command=f"{_GLYPH_BIN} --grab --instant",
+        binding="<Super><Shift>i",
+        description="Instant Mode A Screen OCR directly to clipboard",
     ),
 ]
 

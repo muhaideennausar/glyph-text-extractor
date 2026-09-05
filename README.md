@@ -310,7 +310,7 @@ Glyph follows the XDG Base Directory specification. Configuration settings are a
 ```json
 {
   "general": {
-    "default_mode": "instant",
+    "default_mode": "edit",
     "notify_on_success": true,
     "notify_on_empty": true
   },
