@@ -15,7 +15,7 @@ from glyph.errors import ConfigurationError
 logger = logging.getLogger("glyph.config")
 
 DEFAULT_CONFIG: Dict[str, Any] = {
-    "version": 1,
+    "version": 2,
     "general": {
         "default_mode": "edit",
         "auto_copy_to_clipboard": True,
@@ -99,6 +99,16 @@ class ConfigManager:
             if not isinstance(raw_data, dict):
                 logger.warning("Configuration root is not a dictionary. Falling back to defaults.")
                 return copy.deepcopy(DEFAULT_CONFIG)
+
+            # Auto-migrate v1 configs where default_mode was factory-set to "instant"
+            if raw_data.get("version", 1) < 2:
+                if raw_data.get("general", {}).get("default_mode") == "instant":
+                    raw_data.setdefault("general", {})["default_mode"] = "edit"
+                raw_data["version"] = 2
+                try:
+                    self.save_config(_deep_merge(DEFAULT_CONFIG, raw_data))
+                except Exception:
+                    pass
 
             merged = _deep_merge(DEFAULT_CONFIG, raw_data)
             validated = self._validate_and_sanitize(merged)

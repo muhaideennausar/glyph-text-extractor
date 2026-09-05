@@ -35,7 +35,7 @@ class TestConfigManager(unittest.TestCase):
         cfg = self.manager.load_config()
 
         self.assertTrue(os.path.exists(self.config_path))
-        self.assertEqual(cfg["version"], 1)
+        self.assertEqual(cfg["version"], 2)
         self.assertEqual(cfg["general"]["default_mode"], "edit")
         self.assertEqual(cfg["ocr"]["default_language"], "eng")
         self.assertEqual(cfg["ocr"]["default_psm"], 3)
@@ -111,6 +111,22 @@ class TestConfigManager(unittest.TestCase):
         updated_cfg = self.manager.load_config()
         self.assertEqual(updated_cfg["editor"]["window_width"], 800)
         self.assertEqual(updated_cfg["editor"]["window_height"], 500)
+
+    def test_v1_to_v2_migration(self):
+        """Tests that a version 1 config file with default_mode instant is migrated to edit."""
+        os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
+        v1_data = {
+            "version": 1,
+            "general": {
+                "default_mode": "instant"
+            }
+        }
+        with open(self.config_path, "w", encoding="utf-8") as f:
+            json.dump(v1_data, f)
+
+        cfg = self.manager.load_config()
+        self.assertEqual(cfg["version"], 2)
+        self.assertEqual(cfg["general"]["default_mode"], "edit")
 
 
 if __name__ == "__main__":
