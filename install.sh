@@ -14,13 +14,20 @@ mkdir -p "$INSTALL_DIR" "$BIN_DIR" "$DESKTOP_DIR" "$METAINFO_DIR"
 # Copy package files from src/glyph
 rm -rf "$INSTALL_DIR/glyph"
 cp -r src/glyph "$INSTALL_DIR/"
+find "$INSTALL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+
+if [ -x "/usr/bin/glyph" ]; then
+    echo "ℹ️  Notice: System package detected at /usr/bin/glyph."
+    echo "   This local installation in $BIN_DIR/glyph will take precedence."
+    echo "   To revert to the system package later, run './uninstall.sh'."
+fi
 
 # Install launcher script to ~/.local/bin/glyph
 cat << 'EOF' > "$BIN_DIR/glyph"
 #!/usr/bin/env bash
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 export PYTHONPATH="$HOME/.local/lib/glyph:$PYTHONPATH"
-exec /usr/bin/python3 -m glyph "$@"
+exec /usr/bin/env python3 -m glyph "$@"
 EOF
 
 chmod +x "$BIN_DIR/glyph"

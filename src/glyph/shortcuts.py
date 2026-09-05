@@ -41,11 +41,21 @@ class ConflictDetail:
 
 def _resolve_glyph_binary() -> str:
     """Finds the absolute path to the glyph binary to ensure desktop daemons find it."""
+    # 1. If currently executing from a specific executable path, prioritize it
+    if sys.argv and sys.argv[0]:
+        argv0 = sys.argv[0]
+        if os.path.isabs(argv0) and os.path.isfile(argv0) and os.access(argv0, os.X_OK):
+            return argv0
+        which_argv0 = shutil.which(argv0)
+        if which_argv0 and os.path.isabs(which_argv0) and os.access(which_argv0, os.X_OK):
+            return which_argv0
+
+    # 2. Check candidates in order: system binary, standard local, or PATH
     for candidate in [
+        "/usr/bin/glyph",
+        "/usr/local/bin/glyph",
         shutil.which("glyph"),
         os.path.expanduser("~/.local/bin/glyph"),
-        "/usr/local/bin/glyph",
-        "/usr/bin/glyph",
     ]:
         if candidate and os.path.isfile(candidate) and os.access(candidate, os.X_OK):
             return candidate

@@ -27,6 +27,27 @@ from glyph.errors import (
 logger = logging.getLogger("glyph")
 
 
+class GlyphVersionAction(argparse.Action):
+    """Custom version action providing cross-distro diagnostic info if shadowed."""
+    def __init__(self, option_strings, dest=argparse.SUPPRESS, default=argparse.SUPPRESS, help="Show program's version number and exit."):
+        super().__init__(option_strings=option_strings, dest=dest, default=default, nargs=0, help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        import glyph
+        print(f"{__app_name__} {__version__}")
+        loaded_path = os.path.abspath(glyph.__file__)
+        sys_bin = "/usr/bin/glyph"
+        local_bin = os.path.expanduser("~/.local/bin/glyph")
+        if os.path.isfile(sys_bin) and os.path.isfile(local_bin):
+            if "/.local/" in loaded_path:
+                sys.stderr.write(
+                    f"\n[Note] Running user installation from {os.path.dirname(loaded_path)}.\n"
+                    f"       A system package is also installed at {sys_bin}.\n"
+                    f"       Run './uninstall.sh' or remove '{local_bin}' to use the system package.\n"
+                )
+        sys.exit(0)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=__app_name__,
@@ -130,8 +151,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--version", "-v",
-        action="version",
-        version=f"{__app_name__} {__version__}"
+        action=GlyphVersionAction
     )
     return parser.parse_args()
 
