@@ -6,6 +6,7 @@
   <p>PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.</p>
 
 [![CI](https://github.com/muhaideennausar/glyph-text-extractor/actions/workflows/ci.yml/badge.svg)](https://github.com/muhaideennausar/glyph-text-extractor/actions)
+[![Latest Release](https://img.shields.io/github/v/release/muhaideennausar/glyph-text-extractor?color=blue&label=release)](https://github.com/muhaideennausar/glyph-text-extractor/releases/latest)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Wayland%20%7C%20X11-green.svg)](#)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](#)
@@ -26,8 +27,11 @@
 - **Two Operating Modes:**
   - **Mode A (Instant):** Crop a screen region and have text copied directly to your clipboard with a desktop notification.
   - **Mode B (Review & Edit):** Clean, inspect, join broken PDF lines, or trim whitespace in a native Libadwaita modal before copying.
-- **Compositor Agnostic:** Works seamlessly on GNOME, KDE Plasma, Hyprland, Sway, XFCE, and i3 via standard XDG Desktop Portals or native CLI grabbers (`grim`, `slurp`, `maim`, `scrot`).
+- **Statement & Paragraph Layout Preservation:** Fully automatic page segmentation (`PSM 3`) with resilient fallback cascades (`6`, `11`, `7`) preserves statement breaks (`\n\n`), code indentation, and multi-paragraph layout structure.
+- **Compositor Agnostic:** Works seamlessly on GNOME, KDE Plasma, Hyprland, Sway, XFCE, Cinnamon, and i3 via standard XDG Desktop Portals or native CLI grabbers (`grim`, `slurp`, `maim`, `scrot`).
+- **Reliable Desktop Notifications:** Sanitized FreeDesktop notifications with XML/HTML character escaping and branded application icons across all desktop environments.
 - **Offline & Private:** Zero telemetry, no cloud APIs, private `0o600` temporary capture permissions with instant file shredding.
+- **Cross-Distro Conflict Prevention:** Built-in dual-installation diagnostic warnings alert you if a user-space pip binary is shadowing system package installations.
 - **Resource Light:** Consumes < 35MB RAM. Runs smoothly even on low-spec hardware.
 
 ---
@@ -161,7 +165,7 @@ cd packaging/arch && makepkg -si
 ### Python / pipx
 
 ```bash
-pipx upgrade glyph-ocr
+pipx upgrade glyph-text-extractor
 # Or reinstall latest from GitHub:
 pipx install --force git+https://github.com/muhaideennausar/glyph-text-extractor.git
 ```
@@ -258,6 +262,10 @@ bindsym $mod+Shift+e exec glyph --grab --edit
 ## 🛠️ CLI Usage & Options
 
 ```bash
+# Print version and diagnose dual-install conflicts
+glyph --version
+glyph -v
+
 # Instant interactive screen capture and copy (Mode A)
 glyph --grab
 glyph -g
@@ -274,8 +282,17 @@ glyph --grab -l deu   # German
 glyph --grab -l fra   # French
 glyph --grab -l spa   # Spanish
 
-# Custom Page Segmentation Mode (PSM)
-glyph --grab --psm 7  # Single text line
+# Custom Page Segmentation Mode (defaults to PSM 3 for layout preservation)
+glyph --grab --psm 3  # Fully automatic page segmentation (default)
+glyph --grab --psm 6  # Assume a single uniform block of text
+glyph --grab --psm 7  # Treat image as a single text line
+glyph --grab --psm 11 # Find as much text as possible (sparse text)
+
+# Scale factor for low-resolution captures (default: 2.0x upscale)
+glyph --grab --scale 3.0
+
+# Print extracted text directly to stdout
+glyph --grab --stdout
 
 # Suppress desktop notifications
 glyph --grab --no-notify
@@ -300,7 +317,8 @@ Glyph follows the XDG Base Directory specification. Configuration settings are a
   "ocr": {
     "default_engine": "tesseract",
     "default_language": "eng",
-    "default_psm": 6
+    "default_psm": 3,
+    "upscale_factor": 2.0
   },
   "editor": {
     "window_width": 640,
@@ -310,6 +328,12 @@ Glyph follows the XDG Base Directory specification. Configuration settings are a
 }
 ```
 
+### Page Segmentation Modes (`default_psm`)
+- **`3` (Default):** Fully automatic page segmentation without OSD (preserves statement breaks, code blocks, and multi-paragraph layout).
+- **`6`:** Assume a single uniform block of text.
+- **`7`:** Treat the image as a single text line.
+- **`11`:** Sparse text (finds as much text as possible in no particular order).
+
 Precedence order:
 `CLI Flags > ~/.config/glyph/config.json > Factory Defaults`
 
@@ -317,10 +341,10 @@ Precedence order:
 
 ## 🧪 Testing
 
-Glyph comes with a comprehensive unit and edge-case test suite covering corrupt headers, 0-byte aborts, 100MP gigapixel bombs, portal timeouts, and multi-line formatting:
+Glyph comes with a comprehensive test suite of 65 unit and edge-case tests covering corrupt headers, 0-byte aborts, 100MP gigapixel bombs, portal timeouts, statement break preservation, markup escaping, and desktop shortcut collision detection:
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover tests -v
+python3 -m unittest discover -s tests -v
 ```
 
 ---

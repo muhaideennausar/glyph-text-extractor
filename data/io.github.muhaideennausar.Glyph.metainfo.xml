@@ -16,7 +16,9 @@
     <ul>
       <li>Instant Mode A pipeline: crop, preprocess, extract, and copy directly to the system clipboard in milliseconds.</li>
       <li>Interactive Mode B editor: review, format, trim whitespace, and join broken lines before copying.</li>
+      <li>Automatic page segmentation preserving statement breaks and paragraph layout spacing with multi-stage fallback.</li>
       <li>Native Wayland and X11 compositor support via XDG Desktop Portal, grim, slurp, maim, or scrot.</li>
+      <li>Reliable cross-desktop notifications with formatted text escaping and branded application icons.</li>
       <li>Local, offline processing with zero telemetry and private temporary file storage.</li>
       <li>Lightweight, native GTK4 and Libadwaita user interface following GNOME Human Interface Guidelines.</li>
     </ul>
