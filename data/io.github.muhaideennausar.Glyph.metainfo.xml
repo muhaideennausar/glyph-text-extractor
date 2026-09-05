@@ -50,6 +50,18 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.2.0" date="2026-09-05">
+      <description>
+        <p>Next-generation OCR engine upgrade with geometry-aware PSM layout detection, edge enhancement, and silent Wayland portal integration.</p>
+        <ul>
+          <li>Smart geometry-based PSM layout detection prioritizing single-line (PSM 7) and block (PSM 6) modes for screen clippings</li>
+          <li>Screen-optimized Tesseract configuration with interword space preservation and explicit 300 DPI neural LSTM heuristics</li>
+          <li>Unsharp mask edge sharpening for antialiased screen fonts and Otsu binarization fallback for low-contrast text</li>
+          <li>Multi-pass recognition cascade and TSV structured data extraction with word-level confidence</li>
+          <li>Fixed D-Bus PermissionStore pre-authorization for silent snapshot capture in GNOME Wayland</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.4" date="2026-09-05">
       <description>
         <p>Reliable desktop notifications, statement break OCR preservation, and cross-distro conflict detection.</p>

@@ -6,7 +6,7 @@ import os
 from typing import Tuple, Union
 import statistics
 import logging
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageOps, ImageFilter, UnidentifiedImageError
 
 from glyph.errors import ImageValidationError, DimensionLimitExceededError
 
@@ -118,12 +118,60 @@ class ImagePreprocessor:
         else:
             return 1.0  # Full pages or tall clippings
 
+    @staticmethod
+    def enhance_edges(image: Image.Image) -> Image.Image:
+        """Applies gentle unsharp masking to sharpen antialiased character strokes."""
+        try:
+            return image.filter(ImageFilter.UnsharpMask(radius=1.5, percent=140, threshold=3))
+        except Exception:
+            return image.filter(ImageFilter.SHARPEN)
+
+    @staticmethod
+    def binarize_otsu(image: Image.Image) -> Image.Image:
+        """Applies Otsu's thresholding to produce crisp black-and-white text.
+
+        Computes the optimal threshold separating foreground text from background
+        by maximizing inter-class variance of the grayscale histogram.
+        """
+        grayscale = image.convert("L")
+        histogram = grayscale.histogram()
+        total_pixels = sum(histogram)
+        if total_pixels == 0:
+            return grayscale
+
+        current_max = 0.0
+        threshold = 128
+        sum_total = sum(i * histogram[i] for i in range(256))
+        sum_background = 0.0
+        weight_background = 0
+
+        for i in range(256):
+            weight_background += histogram[i]
+            if weight_background == 0:
+                continue
+            weight_foreground = total_pixels - weight_background
+            if weight_foreground == 0:
+                break
+
+            sum_background += i * histogram[i]
+            mean_background = sum_background / weight_background
+            mean_foreground = (sum_total - sum_background) / weight_foreground
+
+            variance_between = weight_background * weight_foreground * ((mean_background - mean_foreground) ** 2)
+            if variance_between > current_max:
+                current_max = variance_between
+                threshold = i
+
+        return grayscale.point(lambda p: 255 if p > threshold else 0, mode="1").convert("L")
+
     @classmethod
     def process(
         cls,
         image_path_or_obj: Union[str, Image.Image],
         scale_factor: float = 3.0,
-        padding_px: int = 30
+        padding_px: int = 30,
+        enhance_edges: bool = True,
+        binarize: bool = False
     ) -> Image.Image:
         """
         Executes the full preprocessing pipeline:
@@ -133,7 +181,9 @@ class ImagePreprocessor:
         4. Dynamic contrast normalization
         5. Dark mode background detection & auto-inversion
         6. Adaptive upscaling (preserves scale for large text, upscales tiny UI fonts)
-        7. White border padding to prevent edge character truncation
+        7. Edge enhancement (unsharp masking for antialiased screen fonts)
+        8. Optional Otsu binarization for difficult or low-contrast text
+        9. White border padding to prevent edge character truncation
         """
         raw_img = cls.validate_and_open(image_path_or_obj)
 
@@ -160,7 +210,15 @@ class ImagePreprocessor:
             new_h = max(1, int(orig_h * effective_scale))
             img = img.resize((new_w, new_h), Image.Resampling.BICUBIC)
 
-        # 6. Padding with pure white around the text
+        # 6. Edge sharpening for crisp font rendering
+        if enhance_edges:
+            img = cls.enhance_edges(img)
+
+        # 7. Optional Otsu binarization
+        if binarize:
+            img = cls.binarize_otsu(img)
+
+        # 8. Padding with pure white around the text
         if padding_px > 0:
             img = ImageOps.expand(img, border=padding_px, fill=255)
 

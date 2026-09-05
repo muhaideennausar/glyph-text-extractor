@@ -5,6 +5,7 @@ Unit tests for the pluggable OCR subsystem.
 import os
 import sys
 import unittest
+from unittest.mock import patch, MagicMock
 from PIL import Image
 
 # Ensure src directory is in sys.path
@@ -65,6 +66,46 @@ class TestOCRSubsystem(unittest.TestCase):
         """Tests that retrieving an unknown engine raises EngineNotFoundError."""
         with self.assertRaises(EngineNotFoundError):
             OCREngineRegistry.get_engine("non_existent_engine")
+
+    def test_detect_optimal_psm(self):
+        """Tests geometry-based PSM selection heuristic."""
+        # Single-line snippet: wide and short
+        img_single = Image.new("L", (300, 50))
+        self.assertEqual(TesseractEngine.detect_optimal_psm(img_single), 7)
+
+        # Standard text block / UI clip
+        img_block = Image.new("L", (250, 150))
+        self.assertEqual(TesseractEngine.detect_optimal_psm(img_block), 6)
+
+        # Full page / multi-column document
+        img_page = Image.new("L", (800, 700))
+        self.assertEqual(TesseractEngine.detect_optimal_psm(img_page), 3)
+
+    def test_tesseract_clean_text_noise_filter(self):
+        """Tests that single-character noise lines are filtered out."""
+        raw = "Line One\n.\nLine Two\n~\nLine Three"
+        cleaned = TesseractEngine._clean_text(raw)
+        self.assertEqual(cleaned, "Line One\nLine Two\nLine Three")
+
+    @patch("subprocess.run")
+    def test_extract_tsv_parsing(self, mock_run):
+        """Tests TSV structured data extraction and confidence parsing."""
+        tsv_output = (
+            "level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidth\theight\tconf\ttext\n"
+            "5\t1\t1\t1\t1\t1\t10\t10\t50\t20\t95.5\tHello\n"
+            "5\t1\t1\t1\t1\t2\t70\t10\t50\t20\t88.0\tWorld\n"
+        )
+        mock_run.return_value = MagicMock(returncode=0, stdout=tsv_output.encode("utf-8"))
+
+        engine = TesseractEngine(language="eng")
+        dummy_img = Image.new("L", (100, 40))
+        records = engine.extract_tsv(dummy_img, psm=7)
+
+        self.assertEqual(len(records), 2)
+        self.assertEqual(records[0]["text"], "Hello")
+        self.assertEqual(records[0]["conf"], 95.5)
+        self.assertEqual(records[1]["text"], "World")
+        self.assertEqual(records[1]["conf"], 88.0)
 
 
 if __name__ == "__main__":

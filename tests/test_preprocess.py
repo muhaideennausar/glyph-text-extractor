@@ -60,12 +60,38 @@ class TestImagePreprocessor(unittest.TestCase):
         scale_page = ImagePreprocessor._calculate_adaptive_scale(1000, 800, 3.0)
         self.assertEqual(scale_page, 1.0)
 
-    def test_process_padding(self):
-        """Tests that expand padding is applied around the processed image."""
+    def test_enhance_edges(self):
+        """Tests that edge enhancement runs and preserves image dimensions."""
+        img = Image.new("L", (100, 100), color=128)
+        enhanced = ImagePreprocessor.enhance_edges(img)
+        self.assertEqual(enhanced.size, (100, 100))
+
+    def test_binarize_otsu(self):
+        """Tests that Otsu binarization produces a two-tone (0 or 255) grayscale image."""
+        img = Image.new("L", (100, 100), color=100)
+        # Create a contrasting patch
+        for x in range(30, 70):
+            for y in range(30, 70):
+                img.putpixel((x, y), 200)
+        binarized = ImagePreprocessor.binarize_otsu(img)
+        self.assertEqual(binarized.size, (100, 100))
+        colors = binarized.getcolors()
+        self.assertIsNotNone(colors)
+        # All pixels must be either 0 or 255
+        pixel_values = {val for count, val in colors}
+        self.assertTrue(pixel_values.issubset({0, 255}))
+
+    def test_process_with_enhance_and_binarize(self):
+        """Tests running the pipeline with both edge sharpening and binarization enabled."""
         img = Image.new("RGB", (100, 100), color=(255, 255, 255))
-        processed = ImagePreprocessor.process(img, scale_factor=1.0, padding_px=20)
-        # Original size 100x100 + 20px padding on all sides = 140x140
-        self.assertEqual(processed.size, (140, 140))
+        processed = ImagePreprocessor.process(
+            img,
+            scale_factor=1.0,
+            padding_px=10,
+            enhance_edges=True,
+            binarize=True
+        )
+        self.assertEqual(processed.size, (120, 120))
 
 
 if __name__ == "__main__":

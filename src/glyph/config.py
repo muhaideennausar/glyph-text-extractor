@@ -24,8 +24,11 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "ocr": {
         "default_engine": "tesseract",
         "default_language": "eng",
-        "default_psm": 3,
+        "default_psm": 6,
         "enable_adaptive_scaling": True,
+        "smart_psm": True,
+        "enhance_edges": True,
+        "preserve_spaces": True,
     },
     "editor": {
         "window_width": 640,
@@ -160,6 +163,12 @@ class ConfigManager:
             ocr["default_psm"] = DEFAULT_CONFIG["ocr"]["default_psm"]
         if not isinstance(ocr.get("enable_adaptive_scaling"), bool):
             ocr["enable_adaptive_scaling"] = DEFAULT_CONFIG["ocr"]["enable_adaptive_scaling"]
+        if not isinstance(ocr.get("smart_psm"), bool):
+            ocr["smart_psm"] = DEFAULT_CONFIG["ocr"]["smart_psm"]
+        if not isinstance(ocr.get("enhance_edges"), bool):
+            ocr["enhance_edges"] = DEFAULT_CONFIG["ocr"]["enhance_edges"]
+        if not isinstance(ocr.get("preserve_spaces"), bool):
+            ocr["preserve_spaces"] = DEFAULT_CONFIG["ocr"]["preserve_spaces"]
 
         editor = config.get("editor", {})
         if not isinstance(editor.get("window_width"), int) or editor["window_width"] < 300:

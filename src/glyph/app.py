@@ -159,17 +159,23 @@ def parse_args() -> argparse.Namespace:
 def run_pipeline(
     image_path: str,
     language: str = "eng",
-    psm: int = 6,
+    psm: Optional[int] = None,
     scale: float = 3.0,
     edit_mode: bool = False,
     notify: bool = True,
     copy_clipboard: bool = True,
-    print_stdout: bool = True
+    print_stdout: bool = True,
+    enhance_edges: bool = True,
+    auto_psm: bool = True
 ) -> str:
     """Executes the preprocessor -> OCR -> clipboard -> notification pipeline."""
     try:
-        # 1. Preprocess image with defensive validation
-        processed_image = ImagePreprocessor.process(image_path, scale_factor=scale)
+        # 1. Preprocess image with defensive validation and edge enhancement
+        processed_image = ImagePreprocessor.process(
+            image_path,
+            scale_factor=scale,
+            enhance_edges=enhance_edges
+        )
     except ImageValidationError as e:
         logger.error(f"Image validation failed: {e}")
         if notify:
@@ -186,9 +192,13 @@ def run_pipeline(
             NotificationManager.notify_error("Image processing failed.")
         return ""
 
-    # 2. Extract text via Tesseract
-    engine = OCREngine(language=language, default_psm=psm)
-    extracted_text = engine.extract_text(processed_image, psm=psm)
+    # 2. Extract text via Tesseract with smart layout detection & fallback cascade
+    engine = OCREngine(language=language, default_psm=(psm if psm is not None else 6))
+    extracted_text = engine.extract_text(
+        processed_image,
+        psm=psm,
+        auto_psm=(auto_psm and psm is None)
+    )
 
     # 3. Handle result
     if extracted_text:
@@ -240,8 +250,10 @@ def main() -> None:
     # OCR Language
     lang = args.lang if args.lang is not None else cfg.get("ocr", {}).get("default_language", "eng")
 
-    # OCR PSM
-    psm = args.psm if args.psm is not None else cfg.get("ocr", {}).get("default_psm", 6)
+    # OCR PSM & Smart Detection
+    psm = args.psm if args.psm is not None else None
+    smart_psm = cfg.get("ocr", {}).get("smart_psm", True)
+    enhance_edges = cfg.get("ocr", {}).get("enhance_edges", True)
 
     # OCR Scaling
     if args.scale is not None:
@@ -311,7 +323,9 @@ def main() -> None:
             edit_mode=edit_mode,
             notify=notify,
             copy_clipboard=copy_clipboard,
-            print_stdout=args.stdout or bool(args.file)
+            print_stdout=args.stdout or bool(args.file),
+            enhance_edges=enhance_edges,
+            auto_psm=smart_psm
         )
     finally:
         # Guaranteed cleanup of temporary captures across any storage path

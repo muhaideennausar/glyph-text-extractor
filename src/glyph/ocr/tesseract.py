@@ -63,26 +63,117 @@ class TesseractEngine(BaseOCREngine):
             logger.debug(f"Failed to list Tesseract languages: {e}")
             return ["eng"]
 
-    def extract_text(self, image: Image.Image, psm: Optional[int] = None, **kwargs) -> str:
-        target_psm = psm if psm is not None else self.default_psm
+    @staticmethod
+    def detect_optimal_psm(image: Image.Image) -> int:
+        """Heuristically selects the most accurate Tesseract PSM based on image geometry.
+
+        - Single-line snippet (aspect ratio >= 3.0, height <= 80): PSM 7 (single line)
+        - Short block / UI snippet (height <= 300): PSM 6 (uniform text block)
+        - Large / page capture (height >= 500, width >= 600): PSM 3 (automatic multi-column)
+        - Default for screen clips: PSM 6 (uniform block avoids spurious column breaks)
+        """
+        w, h = image.size
+        if h <= 0:
+            return 6
+        aspect_ratio = w / float(h)
+
+        if h <= 80 and aspect_ratio >= 3.0:
+            return 7  # Single text line
+        elif h <= 300:
+            return 6  # Assume a single uniform block of text
+        elif w >= 600 and h >= 500:
+            return 3  # Fully automatic page segmentation
+        else:
+            return 6  # Uniform block is the most reliable default for screen clips
+
+    def extract_text(
+        self,
+        image: Image.Image,
+        psm: Optional[int] = None,
+        auto_psm: bool = True,
+        **kwargs
+    ) -> str:
+        if psm is not None:
+            target_psm = psm
+        elif auto_psm:
+            target_psm = self.detect_optimal_psm(image)
+        else:
+            target_psm = self.default_psm
 
         # Encode image into memory buffer
         byte_buffer = io.BytesIO()
         image.save(byte_buffer, format="PNG")
         image_bytes = byte_buffer.getvalue()
 
-        # Try primary PSM (PSM 3 preserves paragraph breaks and multi-statement layouts)
+        # Primary pass
         text = self._run_tesseract(image_bytes, target_psm)
 
-        # Smart fallback cascade if primary PSM produced nothing
-        if not text:
-            for fallback_psm in [6, 11, 7]:
+        # If primary pass produced nothing, run smart fallback cascade
+        if not text.strip():
+            candidate_psms = [6, 7, 11, 3] if target_psm not in (6, 7) else [6, 11, 3, 7]
+            for fallback_psm in candidate_psms:
                 if fallback_psm != target_psm:
                     text = self._run_tesseract(image_bytes, psm=fallback_psm)
-                    if text:
+                    if text.strip():
                         break
 
+        # If still empty, try Otsu binarization fallback pass
+        if not text.strip():
+            try:
+                from glyph.preprocess import ImagePreprocessor
+                bin_img = ImagePreprocessor.binarize_otsu(image)
+                bin_buffer = io.BytesIO()
+                bin_img.save(bin_buffer, format="PNG")
+                bin_bytes = bin_buffer.getvalue()
+                text = self._run_tesseract(bin_bytes, psm=target_psm)
+                if not text.strip():
+                    for fallback_psm in [6, 7, 11]:
+                        text = self._run_tesseract(bin_bytes, psm=fallback_psm)
+                        if text.strip():
+                            break
+            except Exception as e:
+                logger.debug(f"Binarization fallback pass failed: {e}")
+
         return self._clean_text(text)
+
+    def extract_tsv(self, image: Image.Image, psm: Optional[int] = None) -> List[dict]:
+        """Extracts structured word data with confidence scores from Tesseract TSV."""
+        target_psm = psm if psm is not None else self.detect_optimal_psm(image)
+        byte_buffer = io.BytesIO()
+        image.save(byte_buffer, format="PNG")
+        cmd = [
+            "tesseract",
+            "stdin",
+            "stdout",
+            "tsv",
+            "-l", self.language,
+            "--psm", str(target_psm),
+            "--oem", "1",
+            "-c", "preserve_interword_spaces=1",
+            "-c", "user_defined_dpi=300",
+        ]
+        try:
+            res = subprocess.run(cmd, input=byte_buffer.getvalue(), capture_output=True, check=False, timeout=10)
+            if res.returncode != 0:
+                return []
+            lines = res.stdout.decode("utf-8", errors="replace").splitlines()
+            if not lines:
+                return []
+            headers = lines[0].split("\t")
+            records = []
+            for row in lines[1:]:
+                parts = row.split("\t")
+                if len(parts) == len(headers):
+                    record = dict(zip(headers, parts))
+                    try:
+                        record["conf"] = float(record.get("conf", -1))
+                    except ValueError:
+                        record["conf"] = -1.0
+                    records.append(record)
+            return records
+        except Exception as e:
+            logger.debug(f"TSV extraction failed: {e}")
+            return []
 
     def _run_tesseract(self, image_bytes: bytes, psm: int) -> str:
         cmd = [
@@ -92,6 +183,8 @@ class TesseractEngine(BaseOCREngine):
             "-l", self.language,
             "--psm", str(psm),
             "--oem", "1",
+            "-c", "preserve_interword_spaces=1",
+            "-c", "user_defined_dpi=300",
         ]
         try:
             result = subprocess.run(
@@ -120,9 +213,18 @@ class TesseractEngine(BaseOCREngine):
             return ""
         cleaned = raw_text.replace("\x0c", "")
         lines = [line.rstrip() for line in cleaned.splitlines()]
-        while lines and not lines[0].strip():
-            lines.pop(0)
-        while lines and not lines[-1].strip():
-            lines.pop()
-        return "\n".join(lines)
+
+        # Filter out stray single-character punctuation noise lines
+        filtered_lines = []
+        for line in lines:
+            stripped = line.strip()
+            if len(stripped) == 1 and stripped in ".~`^'\"-–_":
+                continue
+            filtered_lines.append(line)
+
+        while filtered_lines and not filtered_lines[0].strip():
+            filtered_lines.pop(0)
+        while filtered_lines and not filtered_lines[-1].strip():
+            filtered_lines.pop()
+        return "\n".join(filtered_lines)
 
