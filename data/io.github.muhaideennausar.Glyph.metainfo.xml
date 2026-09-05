@@ -33,10 +33,6 @@
   </provides>
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/banner.png</image>
-      <caption>Glyph - Text Extractor banner</caption>
-    </screenshot>
-    <screenshot>
       <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/mode_a_capture.png</image>
       <caption>Instant selection and optical character recognition</caption>
     </screenshot>

@@ -15,7 +15,7 @@
 ---
 
 <div align="center">
-  <img src="assets/screenshots/banner.png" width="800" alt="Glyph - Text Extractor Banner" />
+  <img src="assets/screenshots/mode_a_capture.png" width="850" alt="Glyph - Text Extractor in Action" />
 </div>
 
 ---
@@ -34,9 +34,19 @@
 
 ## 📸 Screenshots
 
-|                             Mode A: Instant Screen Crop                              |                        Mode B: Interactive Review & Format                         |
-| :----------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------: |
-| <img src="assets/screenshots/mode_a_capture.png" width="400" alt="Mode A Capture" /> | <img src="assets/screenshots/mode_b_editor.png" width="400" alt="Mode B Editor" /> |
+### Mode A: Instant Sniper Screen Crop
+Crop any portion of your screen to extract and copy text instantly to your clipboard.
+
+<div align="center">
+  <img src="assets/screenshots/mode_a_capture.png" width="800" alt="Mode A: Sniper Screen Crop" />
+</div>
+
+### Mode B: Interactive Review & Formatting Modal
+Clean, inspect, join broken PDF lines, and trim whitespace before copying.
+
+<div align="center">
+  <img src="assets/screenshots/mode_b_editor.png" width="800" alt="Mode B: Review & Edit Modal" />
+</div>
 
 ---
 
@@ -117,7 +127,9 @@ Ensure system dependencies are installed:
 To upgrade Glyph when a new version is released:
 
 ### Debian / Ubuntu / Linux Mint / Pop!\_OS (.deb)
+
 Download the updated `.deb` package from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) and upgrade:
+
 ```bash
 sudo apt install --reinstall ./glyph-text-extractor_*_all.deb
 # Or via dpkg:
@@ -125,7 +137,9 @@ sudo dpkg -i ./glyph-text-extractor_*_all.deb
 ```
 
 ### Fedora / RHEL / openSUSE (.rpm)
+
 Download the updated `.rpm` package and upgrade:
+
 ```bash
 sudo dnf upgrade ./glyph-text-extractor-*.rpm
 # On openSUSE:
@@ -133,7 +147,9 @@ sudo zypper update ./glyph-text-extractor-*.rpm
 ```
 
 ### Arch Linux / Manjaro / EndeavourOS
+
 Pull the latest source and rebuild:
+
 ```bash
 cd glyph-text-extractor
 git pull origin main
@@ -141,6 +157,7 @@ cd packaging/arch && makepkg -si
 ```
 
 ### Python / pipx
+
 ```bash
 pipx upgrade glyph-ocr
 # Or reinstall latest from GitHub:
@@ -148,6 +165,7 @@ pipx install --force git+https://github.com/muhaideennausar/glyph-text-extractor
 ```
 
 ### From Source or Portable Archive
+
 ```bash
 git pull origin main
 ./install.sh
