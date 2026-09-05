@@ -34,13 +34,18 @@ def _create_secure_temp_file(prefix: str = "glyph_capture_", suffix: str = ".png
     return path
 
 
-def ensure_portal_screenshot_permission(app_id: str = "io.github.muhaideennausar.Glyph") -> bool:
+def ensure_portal_screenshot_permission(app_id: Optional[str] = None) -> bool:
     """Pre-grants screenshot permission in the XDG Permission Store.
 
     This ensures xdg-desktop-portal marks permission_store_checked=True,
     allowing xdg-desktop-portal-gnome to take 100% silent background snapshots
     without prompting 'Share this screenshot with...'.
     """
+    if app_id:
+        target_ids = [app_id]
+    else:
+        target_ids = ["io.github.muhaideennausar.Glyph", "glyph"]
+
     try:
         bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         proxy = Gio.DBusProxy.new_sync(
@@ -52,18 +57,19 @@ def ensure_portal_screenshot_permission(app_id: str = "io.github.muhaideennausar
             "org.freedesktop.impl.portal.PermissionStore",
             None,
         )
-        for table in ("screenshot", "devices"):
-            try:
-                proxy.call_sync(
-                    "SetPermission",
-                    GLib.Variant("(sbsas)", (table, True, "screenshot", app_id, ["yes"])),
-                    Gio.DBusCallFlags.NONE,
-                    1500,
-                    None,
-                )
-            except Exception:
-                pass
-        logger.debug(f"Pre-authorized screenshot permission for '{app_id}' in XDG PermissionStore.")
+        for aid in target_ids:
+            for table in ("screenshot", "devices"):
+                try:
+                    proxy.call_sync(
+                        "SetPermission",
+                        GLib.Variant("(sbssas)", (table, True, "screenshot", aid, ["yes"])),
+                        Gio.DBusCallFlags.NONE,
+                        1500,
+                        None,
+                    )
+                except Exception:
+                    pass
+        logger.debug(f"Pre-authorized screenshot permission for {target_ids} in XDG PermissionStore.")
         return True
     except Exception as e:
         logger.debug(f"PermissionStore pre-authorization skipped or failed: {e}")
