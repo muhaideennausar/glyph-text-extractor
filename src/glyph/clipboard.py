@@ -90,51 +90,80 @@ class ClipboardManager:
 class NotificationManager:
     """Dispatches user feedback notifications via FreeDesktop desktop notifications."""
 
-    @staticmethod
-    def notify_success(text: str) -> None:
+    APP_ID = "io.github.muhaideennausar.Glyph"
+
+    @classmethod
+    def _get_app_icon(cls) -> str:
+        """Returns the best available application icon identifier or path."""
+        # 1. Check if the icon is installed in standard system icon paths
+        for icon_path in [
+            f"/usr/share/icons/hicolor/scalable/apps/{cls.APP_ID}.svg",
+            f"/usr/share/icons/hicolor/512x512/apps/{cls.APP_ID}.png",
+            f"/usr/local/share/icons/hicolor/scalable/apps/{cls.APP_ID}.svg",
+        ]:
+            if os.path.exists(icon_path):
+                return cls.APP_ID
+
+        # 2. Check local repo / portable layout assets
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        candidate_svg = os.path.join(base_dir, "assets", "icons", "scalable", f"{cls.APP_ID}.svg")
+        if os.path.exists(candidate_svg):
+            return candidate_svg
+        candidate_png = os.path.join(base_dir, "assets", "icons", "hicolor", "512x512", "apps", f"{cls.APP_ID}.png")
+        if os.path.exists(candidate_png):
+            return candidate_png
+
+        # Fallback to the app ID
+        return cls.APP_ID
+
+    @classmethod
+    def notify_success(cls, text: str) -> None:
         """Notifies the user that text was copied, previewing the first characters."""
         preview = text.strip().replace("\n", " ")
         if len(preview) > 60:
             preview = preview[:57] + "..."
 
         body = f"Copied to clipboard:\n\"{preview}\""
-        NotificationManager._send(
+        cls._send(
             title="Glyph - Text Extractor",
             body=body,
-            icon="edit-copy",
+            icon=cls._get_app_icon(),
             urgency="normal"
         )
 
-    @staticmethod
-    def notify_no_text() -> None:
+    @classmethod
+    def notify_no_text(cls) -> None:
         """Notifies the user that no text was detected."""
-        NotificationManager._send(
+        cls._send(
             title="Glyph - Text Extractor",
             body="No text detected in selected region.",
-            icon="dialog-information",
+            icon=cls._get_app_icon(),
             urgency="low"
         )
 
-    @staticmethod
-    def notify_error(message: str) -> None:
+    @classmethod
+    def notify_error(cls, message: str) -> None:
         """Notifies the user of an error."""
-        NotificationManager._send(
+        cls._send(
             title="Glyph - Text Extractor (Error)",
             body=message,
             icon="dialog-error",
             urgency="critical"
         )
 
-    @staticmethod
-    def _send(title: str, body: str, icon: str = "dialog-information", urgency: str = "normal") -> None:
+    @classmethod
+    def _send(cls, title: str, body: str, icon: Optional[str] = None, urgency: str = "normal") -> None:
+        app_icon = icon or cls._get_app_icon()
+
         if shutil.which("notify-send"):
             try:
                 subprocess.run(
                     [
                         "notify-send",
-                        "-a", "Glyph - Text Extractor",
-                        "-i", icon,
+                        "-a", "Glyph",
+                        "-i", app_icon,
                         "-u", urgency,
+                        "-h", f"string:desktop-entry:{cls.APP_ID}",
                         title,
                         body
                     ],
@@ -160,11 +189,14 @@ class NotificationManager:
                 "org.freedesktop.Notifications",
                 None
             )
+            hints = {
+                "desktop-entry": GLib.Variant("s", cls.APP_ID),
+            }
             proxy.call_sync(
                 "Notify",
                 GLib.Variant(
                     "(susssasa{sv}i)",
-                    ("Glyph - Text Extractor", 0, icon, title, body, [], {}, 4000)
+                    ("Glyph", 0, app_icon, title, body, [], hints, 4000)
                 ),
                 Gio.DBusCallFlags.NONE,
                 3000,
