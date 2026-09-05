@@ -42,7 +42,15 @@
 
 ## 📦 Installation
 
-### Option 1: Native Local Installer (Recommended for development)
+### Option 1: Debian / Ubuntu / Linux Mint / Pop!_OS (.deb)
+
+Download the latest `.deb` package from the official [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page and install it with one command (dependencies resolve automatically):
+
+```bash
+sudo apt install ./glyph-text-extractor_*_all.deb
+```
+
+### Option 2: Native Local Installer (From Source)
 
 Clone the repository and run the installer:
 
@@ -63,7 +71,7 @@ Make sure dependencies are installed on your distribution:
 | **Arch / Manjaro**             | `sudo pacman -S tesseract tesseract-data-eng wl-clipboard python-pillow python-gobject gtk4 libadwaita`                               |
 | **openSUSE**                   | `sudo zypper install tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard python3-Pillow python3-gobject gtk4 libadwaita-1-0` |
 
-### Option 2: Flatpak (Flathub)
+### Option 3: Flatpak (Flathub)
 
 ```bash
 flatpak install flathub io.github.muhaideennausar.Glyph

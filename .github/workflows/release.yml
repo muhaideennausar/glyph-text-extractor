@@ -29,6 +29,11 @@ jobs:
         run: |
           python -m build
 
+      - name: Build Debian Package (.deb)
+        run: |
+          chmod +x build_deb.sh
+          ./build_deb.sh
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -82,9 +87,13 @@ jobs:
 
             ## 📦 Installation & Assets
 
-            Pre-built standalone Python wheels (`.whl`) and source tarballs (`.tar.gz`) are attached below.
+            ### Option 1: Debian / Ubuntu / Linux Mint / Pop!_OS (.deb)
+            Download `glyph-text-extractor_${{ github.ref_name }}_all.deb` from the assets below and install:
+            ```bash
+            sudo apt install ./glyph-text-extractor_*.deb
+            ```
 
-            **Native local installation from source:**
+            ### Option 2: Native local installation from source:
             ```bash
             git clone https://github.com/muhaideennausar/glyph-text-extractor.git
             cd glyph-text-extractor
@@ -93,6 +102,7 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
+            dist/*.deb
           generate_release_notes: true
           draft: false
           prerelease: false
