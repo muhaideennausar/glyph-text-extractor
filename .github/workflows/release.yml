@@ -1,9 +1,9 @@
 name: Release
 
-on:
+"on":
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -34,17 +34,62 @@ jobs:
         with:
           name: "Glyph - Text Extractor ${{ github.ref_name }}"
           body: |
-            ### Glyph - Text Extractor 🔍
-            **Lightning-fast screen text extractor for Linux desktops (PowerToys Text Extractor alternative).**
+            # Glyph - Text Extractor ${{ github.ref_name }} 🔍
 
-            #### Highlights:
-            * **Mode A (Instant):** Fast background sniper capture directly to your system clipboard (`glyph --grab` / `Super+Shift+T`).
-            * **Mode B (Review & Edit):** Native GTK4 Libadwaita text formatting and cleanup modal (`glyph --grab --edit` / `Super+Shift+E`).
-            * **Universal Compositor Support:** Native Wayland (GNOME, KDE, Hyprland, Sway) and X11 integration.
-            * **Zero Telemetry & Offline:** Private offline OCR powered by Tesseract 5.4.1.
+            We are thrilled to announce the official release of **Glyph - Text Extractor**, bringing the seamless, lightning-fast experience of Microsoft PowerToys Text Extractor natively to Linux desktops.
+
+            Glyph is engineered from the ground up for modern Wayland and X11 environments, combining an elegant GTK4 / Libadwaita interface with sub-50ms offline OCR execution.
 
             ---
-            *Pre-built Python wheels and source distributions are attached below.*
+
+            ## 🌟 Key Highlights
+
+            ### 🎯 Mode A: Instant Sniper Screen Capture
+            * **Silent Precision Crop:** Instant screen freeze under a darkened translucent veil (`rgba(0, 0, 0, 0.45)`) with precision crosshair cursor.
+            * **Signature Branding:** Electric blue dashed selection border with corner accent brackets matching Glyph's visual identity.
+            * **Real-Time Dimension HUD:** Floating chip displaying live crop resolution (`w × h px`) during drag.
+            * **Zero Shutter Noise:** Direct background snapshot bypasses noisy camera sounds, flashes, and duplicate system notifications.
+            * **Instant Synchronization:** Extracted text is copied directly to your clipboard in milliseconds.
+
+            ### 📝 Mode B: Interactive Review & Format Modal
+            * **Native Libadwaita Interface:** Elegant modal adhering to GNOME Human Interface Guidelines.
+            * **One-Click Sanitization:**
+              * **Single Line:** Intelligently joins broken lines from multi-column PDFs, code snippets, and presentation slides into continuous sentences.
+              * **Trim Whitespace:** Strips leading/trailing whitespace and removes redundant empty lines.
+            * **Live Statistics:** Real-time word and character count indicator.
+            * **Keyboard Productivity:** Press `Ctrl + Enter` to copy and close; press `Escape` to cancel.
+            * **Geometry Memory:** Automatically remembers your preferred window dimensions across sessions.
+
+            ### 🔒 Privacy & Architecture
+            * **100% Offline & Private:** Powered locally by Tesseract OCR 5.4.1 neural LSTM models. Zero telemetry, zero analytics, zero network requests.
+            * **Secure Intermediate Storage:** Captures use private `0o600` permissions with automated memory wiping and instant unlinking after extraction.
+            * **DoS Protection:** Enforces a 50-megapixel decompression bomb defense threshold.
+            * **Minimal Footprint:** Consumes under 35MB RAM with lazy UI instantiation.
+
+            ### 🖥️ Universal Desktop Compatibility
+            * **Wayland & X11 Ready:** Tested and verified on GNOME 44+, KDE Plasma 6, Hyprland, Sway, and X11 window managers.
+            * **XDG Standards:** Fully compliant with XDG Base Directory specifications and XDG Desktop Portal standards.
+
+            ---
+
+            ## ⌨️ Recommended Global Shortcuts
+
+            Bind these commands in your desktop's Keyboard Shortcuts settings:
+            * **Instant Capture (Mode A):** `Super + Shift + T` → `glyph --grab`
+            * **Review & Edit (Mode B):** `Super + Shift + E` → `glyph --grab --edit`
+
+            ---
+
+            ## 📦 Installation & Assets
+
+            Pre-built standalone Python wheels (`.whl`) and source tarballs (`.tar.gz`) are attached below.
+
+            **Native local installation from source:**
+            ```bash
+            git clone https://github.com/muhaideennausar/glyph-text-extractor.git
+            cd glyph-text-extractor
+            ./install.sh
+            ```
           files: |
             dist/*.whl
             dist/*.tar.gz
