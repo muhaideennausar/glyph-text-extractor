@@ -101,7 +101,7 @@ class ConfigManager:
                 return copy.deepcopy(DEFAULT_CONFIG)
 
             # Auto-migrate v1 configs where default_mode was factory-set to "instant"
-            if raw_data.get("version", 1) < 2:
+            if "version" in raw_data and raw_data["version"] < 2:
                 if raw_data.get("general", {}).get("default_mode") == "instant":
                     raw_data.setdefault("general", {})["default_mode"] = "edit"
                 raw_data["version"] = 2
