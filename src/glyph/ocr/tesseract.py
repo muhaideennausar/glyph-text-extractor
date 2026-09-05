@@ -90,7 +90,7 @@ class TesseractEngine(BaseOCREngine):
         self,
         image: Image.Image,
         psm: Optional[int] = None,
-        auto_psm: bool = True,
+        auto_psm: bool = False,
         **kwargs
     ) -> str:
         if psm is not None:
@@ -149,8 +149,6 @@ class TesseractEngine(BaseOCREngine):
             "-l", self.language,
             "--psm", str(target_psm),
             "--oem", "1",
-            "-c", "preserve_interword_spaces=1",
-            "-c", "user_defined_dpi=300",
         ]
         try:
             res = subprocess.run(cmd, input=byte_buffer.getvalue(), capture_output=True, check=False, timeout=10)
@@ -183,8 +181,6 @@ class TesseractEngine(BaseOCREngine):
             "-l", self.language,
             "--psm", str(psm),
             "--oem", "1",
-            "-c", "preserve_interword_spaces=1",
-            "-c", "user_defined_dpi=300",
         ]
         try:
             result = subprocess.run(

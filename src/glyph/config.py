@@ -27,7 +27,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "default_psm": 3,
         "enable_adaptive_scaling": True,
         "smart_psm": True,
-        "enhance_edges": True,
+        "enhance_edges": False,
         "preserve_spaces": True,
     },
     "editor": {

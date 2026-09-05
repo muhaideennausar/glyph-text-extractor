@@ -171,7 +171,7 @@ class ImagePreprocessor:
         image_path_or_obj: Union[str, Image.Image],
         scale_factor: float = 3.0,
         padding_px: int = 30,
-        enhance_edges: bool = True,
+        enhance_edges: bool = False,
         binarize: bool = False
     ) -> Image.Image:
         """
