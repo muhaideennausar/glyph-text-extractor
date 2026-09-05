@@ -7,9 +7,31 @@
    viewBox="0 0 264.58335 264.58335"
    version="1.1"
    id="svg1"
+   sodipodi:docname="Glyph - Text Extractor.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.32099605"
+     inkscape:cx="297.51144"
+     inkscape:cy="531.15918"
+     inkscape:window-width="1366"
+     inkscape:window-height="683"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g18" />
   <defs
      id="defs1">
     <linearGradient
@@ -39,10 +61,10 @@
     <filter
        style="color-interpolation-filters:sRGB"
        id="filter51"
-       x="-0.090708653"
-       y="-0.090708653"
-       width="1.1814173"
-       height="1.2286614">
+       x="-0.11570865"
+       y="-0.11570865"
+       width="1.2314173"
+       height="1.2786614">
       <feFlood
          result="flood"
          in="SourceGraphic"
@@ -111,6 +133,14 @@
          id="feComposite77" />
     </filter>
   </defs>
+  <rect
+     style="fill:#ffffff;stroke-width:13.2292;stroke-dashoffset:52.4999"
+     id="rect2"
+     width="276.12616"
+     height="276.12619"
+     x="-5.7714047"
+     y="-5.77142"
+     ry="9.7223024" />
   <g
      id="layer1">
     <g
@@ -177,9 +207,10 @@
        style="filter:url(#filter51)">
       <g
          id="g16"
-         transform="translate(191.29451,-87.711456)">
+         transform="translate(191.29451,-87.711456)"
+         style="stroke:none;stroke-opacity:1;stroke-width:2.85220845;stroke-dasharray:none">
         <rect
-           style="fill:#0040ff;fill-opacity:1;stroke:none;stroke-width:16.4895;stroke-dasharray:none;stroke-dashoffset:52.4999;stroke-opacity:1"
+           style="fill:#0040ff;fill-opacity:1;stroke:#0030bf;stroke-width:5.29166688;stroke-dasharray:none;stroke-dashoffset:52.4999;stroke-opacity:1"
            id="rect15"
            width="105.83334"
            height="105.83334"
@@ -189,7 +220,7 @@
         <path
            d="m 430.90625,117.13409 v 33.86667 a 3.1750009,3.1750009 0 0 0 3.17501,3.17499 h 9.52498 v 9.52502 a 3.1750009,3.1750009 0 0 0 3.17502,3.17499 h 33.86666 a 3.1750009,3.1750009 0 0 0 3.175,-3.17499 v -33.86668 a 3.1750009,3.1750009 0 0 0 -3.175,-3.17501 h -9.525 v -9.52499 a 3.1750009,3.1750009 0 0 0 -3.175,-3.17501 h -33.86666 a 3.1750009,3.1750009 0 0 0 -3.17501,3.17501 z m 46.56667,15.87499 v 27.51667 h -27.51667 v -27.51667 z m -12.7,-12.7 v 6.35 h -17.99166 a 3.1750009,3.1750009 0 0 0 -3.17501,3.17502 v 17.99165 h -6.35 v -27.51666 z"
            id="path1"
-           style="fill:#ffffff;fill-opacity:1;stroke-width:0.264583" />
+           style="fill:#ffffff;fill-opacity:1;stroke-width:2.85220845;stroke:none;stroke-opacity:1;stroke-dasharray:none" />
       </g>
     </g>
   </g>
