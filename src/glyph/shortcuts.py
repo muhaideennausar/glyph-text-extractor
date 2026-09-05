@@ -565,19 +565,19 @@ def setup_global_shortcuts(auto_yes: bool = False, desktop_override: Optional[st
         if desktop == "hyprland":
             print("  ~/.config/hypr/hyprland.conf:")
             print("    bind = $mainMod SHIFT, T, exec, glyph --grab")
-            print("    bind = $mainMod SHIFT, E, exec, glyph --grab --edit")
+            print("    bind = $mainMod SHIFT, I, exec, glyph --grab --instant")
         elif desktop in ("sway", "i3"):
             cfg = "~/.config/sway/config" if desktop == "sway" else "~/.config/i3/config"
             print(f"  {cfg}:")
             print("    bindsym $mod+Shift+t exec glyph --grab")
-            print("    bindsym $mod+Shift+e exec glyph --grab --edit")
+            print("    bindsym $mod+Shift+i exec glyph --grab --instant")
         return True
 
     else:
         print(f"⚠️  Automatic configuration not supported for desktop environment: {desktop}")
         print("You can manually configure keyboard shortcuts in your system settings:")
         print("  • Super + Shift + T  → glyph --grab")
-        print("  • Super + Shift + E  → glyph --grab --edit")
+        print("  • Super + Shift + I  → glyph --grab --instant")
         return False
 
     print("\n" + "=" * 60)
