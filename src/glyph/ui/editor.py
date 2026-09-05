@@ -197,7 +197,7 @@ def launch_edit_modal(extracted_text: str) -> Optional[str]:
     """
     result = {"text": None}
     app = Adw.Application(
-        application_id="io.github.glyph.Glyph",
+        application_id="io.github.muhaideennausar.Glyph",
         flags=Gio.ApplicationFlags.NON_UNIQUE
     )
 

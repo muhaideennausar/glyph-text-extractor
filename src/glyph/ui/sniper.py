@@ -282,7 +282,7 @@ def interactive_sniper_crop(fullscreen_image_path: str) -> Optional[str]:
     result = {"box": None}
 
     app = Gtk.Application(
-        application_id="io.github.glyph.Sniper",
+        application_id="io.github.muhaideennausar.Glyph.Sniper",
         flags=Gio.ApplicationFlags.NON_UNIQUE
     )
 

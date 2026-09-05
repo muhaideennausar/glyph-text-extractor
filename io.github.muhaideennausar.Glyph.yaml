@@ -1,4 +1,4 @@
-app-id: io.github.glyph.Glyph
+app-id: io.github.muhaideennausar.Glyph
 runtime: org.gnome.Platform
 runtime-version: "47"
 sdk: org.gnome.Sdk
@@ -75,11 +75,11 @@ modules:
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --no-build-isolation --no-deps --prefix=${FLATPAK_DEST} .
-      - install -Dm644 data/io.github.glyph.Glyph.desktop ${FLATPAK_DEST}/share/applications/io.github.glyph.Glyph.desktop
-      - install -Dm644 data/io.github.glyph.Glyph.metainfo.xml ${FLATPAK_DEST}/share/metainfo/io.github.glyph.Glyph.metainfo.xml
-      - install -Dm644 assets/icons/scalable/io.github.glyph.Glyph.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.glyph.Glyph.svg
-      - install -Dm644 assets/icons/scalable/io.github.glyph.Glyph-symbolic.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.glyph.Glyph-symbolic.svg
-      - for size in 48x48 64x64 128x128 256x256 512x512; do install -Dm644 assets/icons/hicolor/${size}/apps/io.github.glyph.Glyph.png ${FLATPAK_DEST}/share/icons/hicolor/${size}/apps/io.github.glyph.Glyph.png; done
+      - install -Dm644 data/io.github.muhaideennausar.Glyph.desktop ${FLATPAK_DEST}/share/applications/io.github.muhaideennausar.Glyph.desktop
+      - install -Dm644 data/io.github.muhaideennausar.Glyph.metainfo.xml ${FLATPAK_DEST}/share/metainfo/io.github.muhaideennausar.Glyph.metainfo.xml
+      - install -Dm644 assets/icons/scalable/io.github.muhaideennausar.Glyph.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.muhaideennausar.Glyph.svg
+      - install -Dm644 assets/icons/scalable/io.github.muhaideennausar.Glyph-symbolic.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.muhaideennausar.Glyph-symbolic.svg
+      - for size in 48x48 64x64 128x128 256x256 512x512; do install -Dm644 assets/icons/hicolor/${size}/apps/io.github.muhaideennausar.Glyph.png ${FLATPAK_DEST}/share/icons/hicolor/${size}/apps/io.github.muhaideennausar.Glyph.png; done
     sources:
       - type: dir
         path: .

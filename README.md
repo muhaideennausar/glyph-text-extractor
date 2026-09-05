@@ -1,7 +1,7 @@
 # Glyph - Text Extractor 🔍
 
 <div align="center">
-  <img src="assets/icons/scalable/io.github.glyph.Glyph.svg" width="128" height="128" alt="Glyph - Text Extractor Logo" />
+  <img src="assets/icons/scalable/io.github.muhaideennausar.Glyph.svg" width="128" height="128" alt="Glyph - Text Extractor Logo" />
   <h3>Lightning-Fast Screen Text Extractor for Linux</h3>
   <p>PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.</p>
 
@@ -66,8 +66,8 @@ Make sure dependencies are installed on your distribution:
 ### Option 2: Flatpak (Flathub)
 
 ```bash
-flatpak install flathub io.github.glyph.Glyph
-flatpak run io.github.glyph.Glyph
+flatpak install flathub io.github.muhaideennausar.Glyph
+flatpak run io.github.muhaideennausar.Glyph
 ```
 
 ---

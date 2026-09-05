@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.glyph.Glyph</id>
+  <id>io.github.muhaideennausar.Glyph</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>Glyph - Text Extractor</name>
@@ -21,11 +21,11 @@
       <li>Lightweight, native GTK4 and Libadwaita user interface following GNOME Human Interface Guidelines.</li>
     </ul>
   </description>
-  <launchable type="desktop-id">io.github.glyph.Glyph.desktop</launchable>
+  <launchable type="desktop-id">io.github.muhaideennausar.Glyph.desktop</launchable>
   <url type="homepage">https://github.com/muhaideennausar/glyph-text-extractor</url>
   <url type="bugtracker">https://github.com/muhaideennausar/glyph-text-extractor/issues</url>
   <url type="vcs-browser">https://github.com/muhaideennausar/glyph-text-extractor</url>
-  <developer id="io.github.glyph">
+  <developer id="io.github.muhaideennausar">
     <name>Glyph - Text Extractor Contributors</name>
   </developer>
   <provides>

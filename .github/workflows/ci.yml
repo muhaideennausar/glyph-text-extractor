@@ -40,8 +40,8 @@ jobs:
 
       - name: Validate Desktop Entry & AppStream Metadata
         run: |
-          desktop-file-validate data/io.github.glyph.Glyph.desktop
-          appstreamcli validate --no-net data/io.github.glyph.Glyph.metainfo.xml
+          desktop-file-validate data/io.github.muhaideennausar.Glyph.desktop
+          appstreamcli validate --no-net data/io.github.muhaideennausar.Glyph.metainfo.xml
 
       - name: Run Unit & Edge-Case Test Suite
         env:
