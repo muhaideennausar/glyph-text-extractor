@@ -186,7 +186,9 @@ class TestKdeShortcutManager(unittest.TestCase):
         groups = [c[c.index("--group") + 1] for c in calls if "--group" in c]
         keys = [c[c.index("--key") + 1] for c in calls if "--key" in c]
 
-        self.assertTrue(all(g == "io.github.muhaideennausar.Glyph.desktop" for g in groups))
+        self.assertIn("io.github.muhaideennausar.Glyph.desktop", groups)
+        self.assertIn("services", groups)
+        self.assertIn("glyph-mode-b.desktop", groups)
         self.assertIn("_k_friendly_name", keys)
         self.assertIn("_launch", keys)
         self.assertIn("Editor", keys)

@@ -54,6 +54,18 @@
   </branding>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.2.4" date="2026-09-06">
+      <description>
+        <p>Complete KDE Plasma multi-tier shortcut architecture with dedicated command launchers, nested services groups, D-Bus setShortcutKeys, and active daemon reload.</p>
+        <ul>
+          <li>Introduced dedicated command shortcut launchers with X-KDE-GlobalAccel-CommandShortcut for seamless Plasma 6 integration</li>
+          <li>Structured kglobalshortcutsrc entries targeting both nested [services] groups and root groups for cross-version compatibility</li>
+          <li>Added X-KDE-Shortcuts Freedesktop desktop specification extensions for Meta+Shift+T and Meta+Shift+I</li>
+          <li>Integrated multi-signal daemon reload pipeline including kbuildsycoca6/5, KWin.reconfigure, kglobalaccel rebindAll, and systemd service refresh</li>
+          <li>Added direct D-Bus setShortcutKeys activation over org.kde.kglobalaccel for instant runtime response</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.3" date="2026-09-06">
       <description>
         <p>KDE Plasma shortcut integration overhaul, native Spectacle screen capture, automated shortcut setup, and VM software rendering fallback.</p>

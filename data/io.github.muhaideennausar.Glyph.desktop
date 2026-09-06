@@ -10,12 +10,15 @@ Categories=Utility;
 Keywords=OCR;Screenshot;Text;Extract;Snipping;PowerToys;Capture;
 StartupNotify=false
 Actions=Editor;Instant;
+X-KDE-Shortcuts=Meta+Shift+T
 
 [Desktop Action Editor]
 Name=Capture & Edit
 Exec=glyph --grab
+X-KDE-Shortcuts=Meta+Shift+T
 
 [Desktop Action Instant]
 Name=Instant Capture & Copy
 Exec=glyph --grab --instant
+X-KDE-Shortcuts=Meta+Shift+I
 

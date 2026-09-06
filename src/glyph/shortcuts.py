@@ -460,12 +460,16 @@ class KdeShortcutManager:
         return None
 
     @classmethod
-    def _run_kwriteconfig(cls, kwrite: str, group: str, key: str, value: str) -> bool:
-        """Executes kwriteconfig6/5 with --notify if supported, falling back without."""
+    def _run_kwriteconfig(cls, kwrite: str, groups: List[str], key: str, value: str) -> bool:
+        """Executes kwriteconfig6/5 with nested groups and --notify if supported."""
+        group_args: List[str] = []
+        for g in groups:
+            group_args.extend(["--group", g])
+
         # Try with --notify first (supported on kwriteconfig6)
         try:
             subprocess.check_call(
-                [kwrite, "--file", "kglobalshortcutsrc", "--group", group, "--key", key, "--notify", value],
+                [kwrite, "--file", "kglobalshortcutsrc"] + group_args + ["--key", key, "--notify", value],
                 stderr=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
             )
@@ -474,7 +478,7 @@ class KdeShortcutManager:
             pass
         try:
             subprocess.check_call(
-                [kwrite, "--file", "kglobalshortcutsrc", "--group", group, "--key", key, value],
+                [kwrite, "--file", "kglobalshortcutsrc"] + group_args + ["--key", key, value],
                 stderr=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
             )
@@ -483,11 +487,15 @@ class KdeShortcutManager:
             return False
 
     @classmethod
-    def _run_kwriteconfig_delete(cls, kwrite: str, group: str, key: str) -> None:
+    def _run_kwriteconfig_delete(cls, kwrite: str, groups: List[str], key: str) -> None:
         """Deletes a key from kglobalshortcutsrc."""
+        group_args: List[str] = []
+        for g in groups:
+            group_args.extend(["--group", g])
+
         for args in [
-            [kwrite, "--file", "kglobalshortcutsrc", "--group", group, "--key", key, "--delete", "--notify"],
-            [kwrite, "--file", "kglobalshortcutsrc", "--group", group, "--key", key, "--delete"],
+            [kwrite, "--file", "kglobalshortcutsrc"] + group_args + ["--key", key, "--delete", "--notify"],
+            [kwrite, "--file", "kglobalshortcutsrc"] + group_args + ["--key", key, "--delete"],
         ]:
             try:
                 subprocess.check_call(args, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
@@ -496,52 +504,88 @@ class KdeShortcutManager:
                 continue
 
     @classmethod
-    def _ensure_desktop_file(cls) -> None:
-        """Ensures io.github.muhaideennausar.Glyph.desktop exists in application paths for KDE."""
+    def _ensure_desktop_files(cls, target: ShortcutTarget, kde_binding: str) -> str:
+        """Ensures both the main app desktop entry and dedicated command shortcut exist."""
         user_apps = Path.home() / ".local" / "share" / "applications"
+        user_apps.mkdir(parents=True, exist_ok=True)
+
+        # 1. Main app desktop file
         user_desktop = user_apps / cls.DESKTOP_ENTRY
         sys_desktop = Path(f"/usr/share/applications/{cls.DESKTOP_ENTRY}")
+        if not (sys_desktop.exists() or user_desktop.exists()):
+            bundled = Path(__file__).resolve().parent.parent.parent / "data" / cls.DESKTOP_ENTRY
+            if bundled.exists():
+                try:
+                    shutil.copy2(bundled, user_desktop)
+                except Exception as e:
+                    logger.debug(f"Could not copy desktop file for KDE: {e}")
 
-        if sys_desktop.exists() or user_desktop.exists():
-            return
+        # 2. Plasma 6 custom command shortcut entry (.desktop with X-KDE-GlobalAccel-CommandShortcut)
+        cmd_desktop_name = f"{target.identifier}.desktop"
+        cmd_desktop_path = user_apps / cmd_desktop_name
+        content = (
+            "[Desktop Entry]\n"
+            "Type=Application\n"
+            f"Name={target.name}\n"
+            f"Exec={target.command}\n"
+            "Icon=io.github.muhaideennausar.Glyph\n"
+            "NoDisplay=true\n"
+            "StartupNotify=false\n"
+            "X-KDE-GlobalAccel-CommandShortcut=true\n"
+            f"X-KDE-Shortcuts={kde_binding}\n"
+        )
+        try:
+            cmd_desktop_path.write_text(content, encoding="utf-8")
+        except Exception as e:
+            logger.debug(f"Failed to write command desktop file {cmd_desktop_path}: {e}")
 
-        bundled = Path(__file__).resolve().parent.parent.parent / "data" / cls.DESKTOP_ENTRY
-        if bundled.exists():
-            try:
-                user_apps.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(bundled, user_desktop)
-                if shutil.which("update-desktop-database"):
-                    subprocess.run(["update-desktop-database", str(user_apps)], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-            except Exception as e:
-                logger.debug(f"Could not copy desktop file for KDE: {e}")
+        return cmd_desktop_name
 
     @classmethod
-    def set_shortcut(cls, target: ShortcutTarget, replace_path: Optional[str] = None) -> bool:
-        kwrite = shutil.which("kwriteconfig6") or shutil.which("kwriteconfig5")
-        if not kwrite:
-            return False
+    def _reload_kde_daemon(cls) -> None:
+        """Forces KDE / KWin cache updates and daemon shortcut reload."""
+        user_apps = Path.home() / ".local" / "share" / "applications"
 
-        cls._ensure_desktop_file()
-        kde_binding = to_kde_binding(target.binding)
-        group = cls.DESKTOP_ENTRY
+        if shutil.which("update-desktop-database"):
+            try:
+                subprocess.run(["update-desktop-database", str(user_apps)], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except Exception:
+                pass
 
-        # 1. Set friendly component name
-        cls._run_kwriteconfig(kwrite, group, "_k_friendly_name", "Glyph - Text Extractor")
+        for sycoca in ["kbuildsycoca6", "kbuildsycoca5"]:
+            if shutil.which(sycoca):
+                try:
+                    subprocess.run([sycoca, "--noincremental"], timeout=5, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                except Exception:
+                    pass
 
-        # 2. Map desktop actions:
-        # Mode B (Review & Edit) maps to _launch and Editor
-        # Mode A (Instant Capture) maps to Instant
-        val = f"{kde_binding},none,{target.name}"
-        if target.identifier == "glyph-mode-b":
-            s1 = cls._run_kwriteconfig(kwrite, group, "_launch", val)
-            s2 = cls._run_kwriteconfig(kwrite, group, "Editor", val)
-            success = s1 or s2
-        elif target.identifier == "glyph-mode-a":
-            success = cls._run_kwriteconfig(kwrite, group, "Instant", val)
-        else:
-            success = cls._run_kwriteconfig(kwrite, group, target.identifier, val)
+        # Plasma 6 / KWin reconfigure calls
+        for qdbus_cmd in ["qdbus6", "qdbus-qt6", "qdbus"]:
+            if shutil.which(qdbus_cmd):
+                try:
+                    subprocess.run([qdbus_cmd, "org.kde.KWin", "/KWin", "reconfigure"], timeout=2, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                    subprocess.run([qdbus_cmd, "org.kde.kglobalaccel", "/component/kglobalaccel", "rebindAll"], timeout=2, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                except Exception:
+                    pass
 
-        # 3. Reload KDE daemon if running (Plasma 5)
+        if shutil.which("busctl"):
+            try:
+                subprocess.run([
+                    "busctl", "--user", "call", "org.kde.KWin", "/KWin", "org.kde.KWin", "reconfigure"
+                ], timeout=2, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except Exception:
+                pass
+
+        if shutil.which("dbus-send"):
+            try:
+                subprocess.run([
+                    "dbus-send", "--session", "--type=method_call",
+                    "--dest=org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure"
+                ], timeout=2, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except Exception:
+                pass
+
+        # Plasma 5 kglobalaccel restart
         if shutil.which("kquitapp5") and shutil.which("kglobalaccel5"):
             try:
                 subprocess.run(["kquitapp5", "kglobalaccel"], timeout=2, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
@@ -549,6 +593,73 @@ class KdeShortcutManager:
             except Exception:
                 pass
 
+        # systemd user service restart
+        if shutil.which("systemctl"):
+            try:
+                subprocess.run(["systemctl", "--user", "restart", "plasma-kglobalaccel.service"], timeout=2, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except Exception:
+                pass
+
+    @classmethod
+    def set_shortcut(cls, target: ShortcutTarget, replace_path: Optional[str] = None) -> bool:
+        kwrite = shutil.which("kwriteconfig6") or shutil.which("kwriteconfig5")
+        if not kwrite:
+            return False
+
+        kde_binding = to_kde_binding(target.binding)
+        cmd_desktop = cls._ensure_desktop_files(target, kde_binding)
+
+        val = f"{kde_binding},{kde_binding},{target.name}"
+        success = False
+
+        # Write to both [services][...] and root [...] groups for maximum compatibility
+        target_groups = [
+            ["services", cls.DESKTOP_ENTRY],
+            [cls.DESKTOP_ENTRY],
+            ["services", cmd_desktop],
+            [cmd_desktop],
+        ]
+
+        for g in target_groups:
+            cls._run_kwriteconfig(kwrite, g, "_k_friendly_name", target.name)
+            cls._run_kwriteconfig(kwrite, g, "_launch", val)
+            if target.identifier == "glyph-mode-b":
+                cls._run_kwriteconfig(kwrite, g, "Editor", val)
+            elif target.identifier == "glyph-mode-a":
+                cls._run_kwriteconfig(kwrite, g, "Instant", val)
+            success = True
+
+        # Try D-Bus setShortcutKeys on org.kde.kglobalaccel for instant runtime activation
+        try:
+            from gi.repository import Gio, GLib
+            bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+            proxy = Gio.DBusProxy.new_sync(
+                bus,
+                Gio.DBusProxyFlags.NONE,
+                None,
+                "org.kde.kglobalaccel",
+                "/kglobalaccel",
+                "org.kde.KGlobalAccel",
+                None,
+            )
+            # Qt key codes: Meta = 0x10000000, Shift = 0x02000000, 'T' = 0x54, 'I' = 0x49
+            keycode = 0x12000054 if target.identifier == "glyph-mode-b" else 0x12000049
+            for comp in [cls.DESKTOP_ENTRY, cmd_desktop]:
+                action_id = [comp, "_launch", "Glyph - Text Extractor", target.name]
+                try:
+                    proxy.call_sync(
+                        "setShortcutKeys",
+                        GLib.Variant("(asa(ai)u)", (action_id, [([keycode, 0, 0, 0],)], 0)),
+                        Gio.DBusCallFlags.NONE,
+                        1000,
+                        None,
+                    )
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+        cls._reload_kde_daemon()
         return success
 
     @classmethod
@@ -556,9 +667,33 @@ class KdeShortcutManager:
         kwrite = shutil.which("kwriteconfig6") or shutil.which("kwriteconfig5")
         if not kwrite:
             return False
-        group = cls.DESKTOP_ENTRY
-        for key in ["_launch", "Editor", "Instant", "glyph-mode-a", "glyph-mode-b"]:
-            cls._run_kwriteconfig_delete(kwrite, group, key)
+
+        all_groups = [
+            ["services", cls.DESKTOP_ENTRY],
+            [cls.DESKTOP_ENTRY],
+            ["services", "glyph-mode-b.desktop"],
+            ["glyph-mode-b.desktop"],
+            ["services", "glyph-mode-a.desktop"],
+            ["glyph-mode-a.desktop"],
+            ["glyph.desktop"],
+        ]
+
+        keys_to_clean = ["_launch", "Editor", "Instant", "glyph-mode-a", "glyph-mode-b", "_k_friendly_name"]
+        for g in all_groups:
+            for k in keys_to_clean:
+                cls._run_kwriteconfig_delete(kwrite, g, k)
+
+        # Remove custom command desktop files
+        user_apps = Path.home() / ".local" / "share" / "applications"
+        for name in ["glyph-mode-b.desktop", "glyph-mode-a.desktop"]:
+            f = user_apps / name
+            if f.exists():
+                try:
+                    f.unlink()
+                except OSError:
+                    pass
+
+        cls._reload_kde_daemon()
         return True
 
 
