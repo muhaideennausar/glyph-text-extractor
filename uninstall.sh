@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=== Removing local Glyph development installation ==="
+echo "==> Removing local Glyph installation"
 
 # Remove global shortcuts
 if command -v glyph >/dev/null 2>&1; then
@@ -37,4 +37,4 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
     gtk-update-icon-cache -q -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
 fi
 
-echo "✓ Local installation completely removed."
+echo "removed: Local installation removed."

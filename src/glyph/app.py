@@ -50,25 +50,25 @@ class GlyphVersionAction(argparse.Action):
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=__app_name__,
-        description="Glyph - Text Extractor: High-performance Linux screen text extractor (PowerToys Text Extractor clone)."
+        description="Glyph - Text Extractor: Screen text extractor and OCR utility for Linux desktops."
     )
     parser.add_argument(
         "--grab", "-g",
         action="store_true",
         default=True,
-        help="Trigger interactive screen selection (default behavior)."
+        help="Trigger screen region selection (default behavior)."
     )
     parser.add_argument(
         "--edit", "-e",
         action="store_true",
         default=None,
-        help="Mode B: Open review & edit modal before copying to clipboard."
+        help="Mode B: Open review and edit window before copying to clipboard."
     )
     parser.add_argument(
         "--instant", "-i",
         action="store_true",
         default=None,
-        help="Mode A: Directly copy to clipboard without opening editor modal."
+        help="Mode A: Copy recognized text directly to clipboard without opening review window."
     )
     parser.add_argument(
         "--file", "-f",

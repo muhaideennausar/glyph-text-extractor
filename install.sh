@@ -7,7 +7,7 @@ DESKTOP_DIR="$HOME/.local/share/applications"
 METAINFO_DIR="$HOME/.local/share/metainfo"
 ICONS_DIR="$HOME/.local/share/icons/hicolor"
 
-echo "=== Installing Glyph - Text Extractor ==="
+echo "==> Installing Glyph - Text Extractor"
 
 mkdir -p "$INSTALL_DIR" "$BIN_DIR" "$DESKTOP_DIR" "$METAINFO_DIR"
 
@@ -27,7 +27,7 @@ if [ -n "$WAYLAND_DISPLAY" ] && ! command -v wl-copy >/dev/null 2>&1; then
 fi
 
 if [ ${#MISSING_PKGS[@]} -gt 0 ]; then
-    echo "⚠️  Missing runtime dependencies detected:"
+    echo "warning: Missing runtime dependencies detected:"
     for pkg in "${MISSING_PKGS[@]}"; do
         echo "   - $pkg"
     done
@@ -52,7 +52,7 @@ cp -r src/glyph "$INSTALL_DIR/"
 find "$INSTALL_DIR" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 if [ -x "/usr/bin/glyph" ]; then
-    echo "ℹ️  Notice: System package detected at /usr/bin/glyph."
+    echo "notice: System package detected at /usr/bin/glyph."
     echo "   This local installation in $BIN_DIR/glyph will take precedence."
     echo "   To revert to the system package later, run './uninstall.sh'."
 fi
@@ -156,10 +156,10 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
     gtk-update-icon-cache -q -t "$ICONS_DIR" || true
 fi
 
-echo "✓ Glyph - Text Extractor installed to $BIN_DIR/glyph"
-echo "✓ Desktop entry created at $DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
-echo "✓ AppStream metainfo installed at $METAINFO_DIR/io.github.muhaideennausar.Glyph.metainfo.xml"
-echo "✓ High-resolution & symbolic icons installed to $ICONS_DIR"
+echo "installed: $BIN_DIR/glyph"
+echo "desktop entry: $DESKTOP_DIR/io.github.muhaideennausar.Glyph.desktop"
+echo "metainfo: $METAINFO_DIR/io.github.muhaideennausar.Glyph.metainfo.xml"
+echo "icons: $ICONS_DIR"
 
 # Configure global desktop shortcuts interactively
 if [ -t 0 ]; then
