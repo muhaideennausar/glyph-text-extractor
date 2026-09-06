@@ -128,7 +128,7 @@ git push -u origin add-glyph
    - **ID:** `io.github.muhaideennausar.Glyph`
    - **Upstream Repository:** https://github.com/muhaideennausar/glyph-text-extractor
    - **License:** GPL-3.0-or-later
-   - **Description:** Lightning-fast screen text extractor for Linux desktops inspired by PowerToys Text Extractor.
+   - **Description:** Screen text extractor and OCR utility for Linux desktops inspired by PowerToys Text Extractor.
    ```
 
 6. Click **Create pull request**.
