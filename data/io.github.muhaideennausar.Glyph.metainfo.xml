@@ -4,23 +4,22 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>Glyph - Text Extractor</name>
-  <summary>Lightning-fast screen text extractor for Linux</summary>
+  <summary>Screen text extractor and OCR utility</summary>
   <description>
     <p>
-      Glyph - Text Extractor is a lightning-fast screen text extractor for Linux desktops, inspired
-      by PowerToys Text Extractor. It enables you to instantly select any screen region,
-      extract text using optical character recognition, and automatically copy it
-      to your clipboard.
+      Glyph is a screen text extractor and OCR utility for Linux desktops. Inspired
+      by Microsoft PowerToys Text Extractor, Glyph allows you to select any screen region,
+      extract text using optical character recognition, and copy it to your clipboard.
     </p>
-    <p>Key features include:</p>
+    <p>Key features:</p>
     <ul>
-      <li>Instant Mode A pipeline: crop, preprocess, extract, and copy directly to the system clipboard in milliseconds.</li>
-      <li>Interactive Mode B editor: review, format, trim whitespace, and join broken lines before copying.</li>
-      <li>Automatic page segmentation preserving statement breaks and paragraph layout spacing with multi-stage fallback.</li>
-      <li>Native Wayland and X11 compositor support via XDG Desktop Portal, grim, slurp, maim, or scrot.</li>
-      <li>Reliable cross-desktop notifications with formatted text escaping and branded application icons.</li>
-      <li>Local, offline processing with zero telemetry and private temporary file storage.</li>
-      <li>Lightweight, native GTK4 and Libadwaita user interface following GNOME Human Interface Guidelines.</li>
+      <li>Instant Capture (Mode A): crop a screen area and copy recognized text directly to the system clipboard.</li>
+      <li>Review and Edit (Mode B): inspect text, join split lines, and trim whitespace in a native Libadwaita window before copying.</li>
+      <li>Geometry-aware page segmentation: dynamically chooses single-line, block, or page layout modes based on crop dimensions.</li>
+      <li>Wayland and X11 support via XDG Desktop Portal with fallbacks for spectacle, grim, slurp, maim, and scrot.</li>
+      <li>Desktop notifications with escaped markup and application icon integration.</li>
+      <li>Local, offline processing with zero telemetry and private temporary storage.</li>
+      <li>Native GTK4 and Libadwaita interface adhering to GNOME Human Interface Guidelines.</li>
     </ul>
   </description>
   <launchable type="desktop-id">io.github.muhaideennausar.Glyph.desktop</launchable>
@@ -36,11 +35,11 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/mode_a_capture.png</image>
-      <caption>Instant selection and optical character recognition</caption>
+      <caption>Screen region selection and optical character recognition</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/muhaideennausar/glyph-text-extractor/main/assets/screenshots/mode_b_editor.png</image>
-      <caption>Interactive GTK4 and Libadwaita text review and formatting editor</caption>
+      <caption>GTK4 and Libadwaita text review and formatting editor</caption>
     </screenshot>
   </screenshots>
   <categories>
@@ -56,111 +55,109 @@
   <releases>
     <release version="0.2.4" date="2026-09-06">
       <description>
-        <p>Complete KDE Plasma multi-tier shortcut architecture with dedicated command launchers, nested services groups, D-Bus setShortcutKeys, and active daemon reload.</p>
+        <p>KDE Plasma shortcut architecture overhaul with dedicated command launchers, nested services groups, D-Bus setShortcutKeys, and active daemon reload.</p>
         <ul>
-          <li>Introduced dedicated command shortcut launchers with X-KDE-GlobalAccel-CommandShortcut for seamless Plasma 6 integration</li>
+          <li>Introduced dedicated command shortcut launchers with X-KDE-GlobalAccel-CommandShortcut for Plasma 6</li>
           <li>Structured kglobalshortcutsrc entries targeting both nested [services] groups and root groups for cross-version compatibility</li>
-          <li>Added X-KDE-Shortcuts Freedesktop desktop specification extensions for Meta+Shift+T and Meta+Shift+I</li>
-          <li>Integrated multi-signal daemon reload pipeline including kbuildsycoca6/5, KWin.reconfigure, kglobalaccel rebindAll, and systemd service refresh</li>
-          <li>Added direct D-Bus setShortcutKeys activation over org.kde.kglobalaccel for instant runtime response</li>
+          <li>Added X-KDE-Shortcuts desktop specification extensions for Meta+Shift+T and Meta+Shift+I</li>
+          <li>Integrated multi-signal daemon reload pipeline including kbuildsycoca6, KWin.reconfigure, and plasma-kglobalaccel.service refresh</li>
+          <li>Added direct D-Bus setShortcutKeys activation over org.kde.kglobalaccel for immediate runtime binding</li>
         </ul>
       </description>
     </release>
     <release version="0.2.3" date="2026-09-06">
       <description>
-        <p>KDE Plasma shortcut integration overhaul, native Spectacle screen capture, automated shortcut setup, and VM software rendering fallback.</p>
+        <p>KDE Plasma shortcut integration fix, native Spectacle screen capture, automated shortcut setup, and VM software rendering fallback.</p>
         <ul>
-          <li>Fixed KDE Plasma shortcut registration with correct Qt key sequences, desktop action mapping (_launch, Editor, Instant), and kwriteconfig notification</li>
-          <li>Added native KDE Spectacle screenshot engine support for fast background snapshots and interactive region capture</li>
-          <li>Automated global shortcut registration in user installer and added clear post-install guidance in RPM packages</li>
-          <li>Added VM software rendering fallback (GSK_RENDERER=cairo) to prevent Mesa Zink errors in virtualized environments</li>
+          <li>Fixed KDE Plasma shortcut registration with standard Qt key sequences and desktop action mappings</li>
+          <li>Added native KDE Spectacle screenshot engine support for fast background snapshots</li>
+          <li>Automated global shortcut registration prompt in installer</li>
+          <li>Added VM software rendering fallback (GSK_RENDERER=cairo) to prevent Mesa Zink errors in virtual machines</li>
         </ul>
       </description>
     </release>
     <release version="0.2.2" date="2026-09-06">
       <description>
-        <p>Cross-distro RPM compatibility release with openSUSE dependency resolution, dynamic Python runtime detection, and Flathub packaging preparation.</p>
+        <p>Cross-distribution RPM package compatibility, dynamic Python runtime detection, and Flathub packaging preparation.</p>
         <ul>
-          <li>Enhanced RPM spec with rich Boolean dependencies resolving python3-Pillow, tesseract-ocr, and libadwaita-1-0 on openSUSE Leap and Tumbleweed</li>
-          <li>Dynamic Python 3 (>= 3.10) interpreter resolution in RPM and native launchers, preventing missing PIL errors on multi-Python distros</li>
-          <li>Added graceful runtime dependency validation with distribution-specific package manager instructions</li>
-          <li>Flathub Flatpak packaging readiness with GNOME 49 runtime and store branding metadata</li>
+          <li>Enhanced RPM spec with rich Boolean dependencies resolving python3-Pillow, tesseract-ocr, and libadwaita on openSUSE</li>
+          <li>Dynamic Python 3 interpreter resolution in launchers, preventing missing module errors on multi-Python systems</li>
+          <li>Added startup runtime dependency validation with distribution-specific package installation commands</li>
+          <li>Prepared Flathub Flatpak packaging with GNOME 49 runtime and store branding metadata</li>
         </ul>
       </description>
     </release>
     <release version="0.2.1" date="2026-09-06">
       <description>
-        <p>Cross-distro polish and packaging stability release for Arch Linux, Fedora, and Debian environments.</p>
+        <p>Cross-distribution packaging stability release for Arch Linux, Fedora, and Debian environments.</p>
         <ul>
-          <li>Interactive and automatic shell PATH configuration ensuring ~/.local/bin is registered across bash and zsh</li>
+          <li>Automatic shell PATH configuration ensuring ~/.local/bin is registered across bash and zsh</li>
           <li>Arch Linux package dependency alignment adding tesseract-data-eng</li>
-          <li>Aligned cross-desktop and tiling window manager (Hyprland, Sway) shortcut instructions with v0.2.0 defaults</li>
-          <li>Verified out-of-the-box compatibility on Fedora 40+ and Arch Linux Wayland environments</li>
+          <li>Aligned cross-desktop and tiling window manager shortcut documentation with v0.2.0 defaults</li>
         </ul>
       </description>
     </release>
     <release version="0.2.0" date="2026-09-05">
       <description>
-        <p>Next-generation OCR engine upgrade with geometry-aware PSM layout detection, edge enhancement, and silent Wayland portal integration.</p>
+        <p>OCR engine upgrade with geometry-aware PSM layout detection, edge enhancement, and silent Wayland portal integration.</p>
         <ul>
           <li>Smart geometry-based PSM layout detection prioritizing single-line (PSM 7) and block (PSM 6) modes for screen clippings</li>
-          <li>Screen-optimized Tesseract configuration with interword space preservation and explicit 300 DPI neural LSTM heuristics</li>
+          <li>Screen-optimized Tesseract configuration with interword space preservation</li>
           <li>Unsharp mask edge sharpening for antialiased screen fonts and Otsu binarization fallback for low-contrast text</li>
           <li>Multi-pass recognition cascade and TSV structured data extraction with word-level confidence</li>
-          <li>Fixed D-Bus PermissionStore pre-authorization for silent snapshot capture in GNOME Wayland</li>
+          <li>D-Bus PermissionStore pre-authorization for background snapshot capture in GNOME Wayland</li>
         </ul>
       </description>
     </release>
     <release version="0.1.4" date="2026-09-05">
       <description>
-        <p>Reliable desktop notifications, statement break OCR preservation, and cross-distro conflict detection.</p>
+        <p>Desktop notification escaping, line break preservation, and cross-distribution conflict detection.</p>
         <ul>
-          <li>Preserved statement breaks and paragraph layout spacing by defaulting OCR page segmentation mode to auto (PSM 3) with resilient multi-mode fallbacks</li>
-          <li>Hardened desktop notifications with XML/HTML character escaping and direct absolute icon path resolution across desktop environments</li>
-          <li>Added cross-distro dual-install collision detection and diagnostic warnings in CLI and installer</li>
+          <li>Preserved line breaks and paragraph spacing across OCR passes</li>
+          <li>Hardened desktop notifications with XML and HTML character escaping</li>
+          <li>Added dual-installation collision detection and diagnostic warnings in CLI and installer</li>
           <li>Optimized desktop shortcut handler to resolve running executable paths dynamically</li>
         </ul>
       </description>
     </release>
     <release version="0.1.3" date="2026-09-05">
       <description>
-        <p>Streamlined capture pipeline, refreshed brand identity, and enhanced GNOME Wayland integration.</p>
+        <p>In-memory capture pipeline optimization, icon assets, and GNOME Wayland integration.</p>
         <ul>
-          <li>Eliminated legacy desktop screenshot fallbacks preventing freeze on modern Wayland compositors</li>
-          <li>Refreshed brand identity with updated master SVG and high-resolution icons (48x48 to 512x512)</li>
-          <li>Enhanced GNOME desktop launcher integration with instant startup responsiveness</li>
+          <li>In-memory capture pipeline reducing capture latency</li>
+          <li>High-resolution PNG and scalable SVG icon suite</li>
+          <li>Enhanced GNOME desktop launcher integration</li>
           <li>Hardened shortcut registration with absolute binary path resolution</li>
-          <li>Optimized Linux package installers (.deb, .rpm, portable)</li>
         </ul>
       </description>
     </release>
     <release version="0.1.2" date="2026-09-05">
       <description>
-        <p>Branded desktop notifications, documentation updates, and upgrade lifecycle guides.</p>
+        <p>Desktop notification improvements, documentation updates, and portable tarball archive packaging.</p>
         <ul>
-          <li>Official Glyph application logo and desktop-entry hint in system notifications</li>
-          <li>Comprehensive multi-distro upgrade instructions in documentation</li>
+          <li>Application icon and desktop-entry hint in system notifications</li>
+          <li>Multi-distribution upgrade instructions in documentation</li>
           <li>Portable tarball archive packaging support</li>
         </ul>
       </description>
     </release>
     <release version="0.1.1" date="2026-09-05">
       <description>
-        <p>Cross-desktop global shortcut engine and universal multi-distro packaging.</p>
+        <p>Cross-desktop global shortcut engine and universal multi-distribution packaging.</p>
         <ul>
-          <li>Interactive desktop shortcut configuration with collision detection and conflict resolution</li>
+          <li>Interactive desktop shortcut configuration with collision detection</li>
           <li>Support for GNOME, KDE Plasma, XFCE, Cinnamon, MATE, Hyprland, Sway, and i3</li>
-          <li>Official Debian (.deb), Fedora/openSUSE (.rpm), and Arch Linux PKGBUILD packaging</li>
-          <li>Standalone portable Linux tarball with self-contained launcher</li>
+          <li>Debian (.deb), Fedora/openSUSE (.rpm), and Arch Linux PKGBUILD packaging</li>
+          <li>Standalone portable Linux archive with self-contained launcher</li>
         </ul>
       </description>
     </release>
     <release version="0.1.0" date="2026-09-05">
       <description>
-        <p>Initial production release of Glyph - Text Extractor.</p>
+        <p>Initial release of Glyph - Text Extractor.</p>
         <ul>
-          <li>Instant Mode A screen OCR to clipboard</li>
-          <li>Interactive Mode B review and formatting modal</li>
+          <li>Mode A screen OCR directly to clipboard</li>
+          <li>Mode B review and formatting window</li>
           <li>Wayland portal and native toolchain support</li>
           <li>XDG configuration and security hardening</li>
         </ul>
@@ -168,4 +165,3 @@
     </release>
   </releases>
 </component>
-

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "glyph-text-extractor"
 version = "0.2.4"
-description = "Glyph - Text Extractor: Lightning-fast Linux screen text extractor (PowerToys Text Extractor clone)"
+description = "Screen text extractor and OCR utility for Linux desktops"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.10"

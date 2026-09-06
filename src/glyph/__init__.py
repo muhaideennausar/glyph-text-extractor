@@ -1,5 +1,5 @@
 """
-Glyph - Text Extractor: Fast, universal Linux screen text extractor (PowerToys Text Extractor clone).
+Glyph - Text Extractor: Screen text extractor and OCR utility for Linux.
 """
 
 __version__ = "0.2.4"

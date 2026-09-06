@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Glyph - Text Extractor
 GenericName=Text Extractor
-Comment=Lightning-fast screen text extractor for Linux (PowerToys Text Extractor alternative)
+Comment=Extract text from screen selections using optical character recognition
 Exec=glyph --grab
 Icon=io.github.muhaideennausar.Glyph
 Terminal=false
@@ -21,4 +21,3 @@ X-KDE-Shortcuts=Meta+Shift+T
 Name=Instant Capture & Copy
 Exec=glyph --grab --instant
 X-KDE-Shortcuts=Meta+Shift+I
-
