@@ -1,9 +1,9 @@
-# Glyph - Text Extractor 🔍
+# Glyph - Text Extractor
 
 <div align="center">
-  <img src="assets/icons/scalable/io.github.muhaideennausar.Glyph.svg" width="128" height="128" alt="Glyph - Text Extractor Logo" />
-  <h3>Lightning-Fast Screen Text Extractor for Linux</h3>
-  <p>PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.</p>
+  <img src="assets/icons/scalable/io.github.muhaideennausar.Glyph.svg" width="128" height="128" alt="Glyph Logo" />
+  <h3>Screen Text Extractor and OCR Utility for Linux</h3>
+  <p>Select any screen area to extract text to your clipboard or review and edit it before copying.</p>
 
 [![CI](https://github.com/muhaideennausar/glyph-text-extractor/actions/workflows/ci.yml/badge.svg)](https://github.com/muhaideennausar/glyph-text-extractor/actions)
 [![Latest Release](https://img.shields.io/github/v/release/muhaideennausar/glyph-text-extractor?color=blue&label=release)](https://github.com/muhaideennausar/glyph-text-extractor/releases/latest)
@@ -17,84 +17,92 @@
 ---
 
 <div align="center">
-  <img src="assets/screenshots/mode_a_capture.png" width="850" alt="Glyph - Text Extractor in Action" />
+  <img src="assets/screenshots/mode_a_capture.png" width="850" alt="Glyph Screen Region Selection" />
 </div>
 
 ---
 
-## ⚡ Why Glyph - Text Extractor?
+## Overview
 
-- **Instant Execution:** Snappy background pipeline with in-memory image streaming and lazy UI loading (~20ms latency).
-- **Two Operating Modes:**
-  - **Mode B (Review & Edit — Default):** Clean, inspect, join broken PDF lines, or trim whitespace in a native Libadwaita modal before copying. Triggered by default with `Super + Shift + T` or `glyph --grab`.
-  - **Mode A (Instant Extract):** Crop a screen region and have text copied directly to your clipboard with a desktop notification (`Super + Shift + I` or `glyph --grab --instant`).
-- **Geometry-Aware Smart PSM Detection:** Dynamically switches Page Segmentation Mode based on crop dimensions:
-  - Single-line crops (aspect ratio $\ge 3.0$): Automatically runs **PSM 7** (single line) to prevent broken URLs or commands.
-  - Standard text snippets (height $\le 300\text{px}$): Runs **PSM 6** (uniform block).
-  - Multi-paragraph / page clippings: Runs **PSM 3** (full automatic page segmentation).
-- **Next-Gen Preprocessing:**
-  - **Otsu Binarization Fallback:** Multi-pass recognition cascade triggers an automated Otsu binarization pass on low-contrast or noisy backgrounds.
-  - **Unsharp Mask Edge Sharpening:** Sharpens fine antialiased screen fonts for crystal-clear character boundaries.
-- **Compositor Agnostic:** Works seamlessly on GNOME, KDE Plasma, Hyprland, Sway, XFCE, Cinnamon, and i3 via standard XDG Desktop Portals or native CLI grabbers (`grim`, `slurp`, `maim`, `scrot`).
-- **Reliable Desktop Notifications:** Sanitized FreeDesktop notifications with XML/HTML character escaping and branded application icons across all desktop environments.
-- **Offline & Private:** Zero telemetry, no cloud APIs, private `0o600` temporary capture permissions with instant file shredding.
-- **Cross-Distro Conflict Prevention:** Built-in dual-installation diagnostic warnings alert you if a user-space pip binary is shadowing system package installations.
-- **Resource Light:** Consumes < 35MB RAM. Runs smoothly even on low-spec hardware.
+Glyph is a native screen text extraction tool for Linux desktops running Wayland or X11. Inspired by Microsoft PowerToys Text Extractor, Glyph allows you to select any portion of your display, run optical character recognition locally, and copy the recognized text to your clipboard.
+
+### Operating Modes
+
+Glyph provides two workflows:
+
+- **Review and Edit (Mode B — Default):** Freezes the screen for region selection, extracts text, and opens a Libadwaita modal window. You can inspect the text, join split lines, strip whitespace, and verify accuracy before copying. Triggered via `glyph --grab` or `Super + Shift + T`.
+- **Instant Capture (Mode A):** Freezes the screen for region selection, extracts text, and copies it directly to your system clipboard with a desktop notification. Triggered via `glyph --grab --instant` (or `glyph -i`) or `Super + Shift + I`.
 
 ---
 
-## 📸 Screenshots
+## Features
 
-### Mode A: Instant Sniper Screen Crop
+- **Compositor Agnostic:** Captures screens on GNOME, KDE Plasma, Hyprland, Sway, XFCE, Cinnamon, and i3 using standard XDG Desktop Portals with automated CLI fallbacks (`spectacle`, `grim`, `slurp`, `maim`, `scrot`).
+- **Geometry-Aware Page Segmentation:** Dynamically selects Tesseract Page Segmentation Modes (PSM) based on crop dimensions:
+  - Single-line crops (aspect ratio >= 3:1) use **PSM 7** (single text line) to prevent line breaks in URLs, paths, and commands.
+  - Text blocks (height <= 300px) use **PSM 6** (single uniform block of text).
+  - Multi-paragraph or full-page crops use **PSM 3** (fully automatic page segmentation).
+- **Image Preprocessing Pipeline:**
+  - Automated Otsu binarization fallback for low-contrast or noisy backgrounds.
+  - Unsharp mask sharpening to clarify fine antialiased screen fonts.
+  - RGBA alpha channel flattening onto neutral backgrounds.
+  - Adaptive 3.0x upscaling for low-resolution selections.
+- **Local and Private:** All OCR processing executes locally via Tesseract neural LSTM models. Zero network requests, zero telemetry. Temporary screen captures are written with `0o600` permissions and unlinked immediately after processing.
+- **Automated Desktop Shortcuts:** Built-in shortcut configuration engine with collision detection for GNOME, KDE Plasma 6/5, Cinnamon, MATE, XFCE, Hyprland, Sway, and i3.
+- **Low Resource Usage:** Uses under 35 MB RAM with lazy GTK initialization.
 
-Crop any portion of your screen to extract and copy text instantly to your clipboard.
+---
+
+## Screenshots
+
+### Interactive Region Selection (Mode A / Mode B trigger)
+
+Darkens the screen and provides a crosshair selection box with live dimension feedback.
 
 <div align="center">
-  <img src="assets/screenshots/mode_a_capture.png" width="800" alt="Mode A: Sniper Screen Crop" />
+  <img src="assets/screenshots/mode_a_capture.png" width="800" alt="Screen region selection" />
 </div>
 
-### Mode B: Interactive Review & Formatting Modal
+### Review and Edit Window (Mode B)
 
-Clean, inspect, join broken PDF lines, and trim whitespace before copying.
+Inspect extracted text, join broken PDF lines into continuous prose, trim whitespace, and view word and character counts.
 
 <div align="center">
-  <img src="assets/screenshots/mode_b_editor.png" width="800" alt="Mode B: Review & Edit Modal" />
+  <img src="assets/screenshots/mode_b_editor.png" width="800" alt="Review and edit modal window" />
 </div>
 
 ---
 
-## 📦 Multi-Distro Installation
+## Installation
 
-Glyph is engineered to install natively across all major Linux distributions.
+### Debian, Ubuntu, Linux Mint, Pop!_OS (.deb)
 
-### Option 1: Debian / Ubuntu / Linux Mint / Pop!\_OS (.deb)
-
-Download the latest `.deb` package from the official [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page and install it with one command (all dependencies resolve automatically):
+Download the `.deb` package from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) and install:
 
 ```bash
 sudo apt install ./glyph-text-extractor_*_all.deb
 glyph --setup-shortcuts
 ```
 
-### Option 2: Fedora / RHEL / CentOS / Rocky (.rpm)
+### Fedora, RHEL, Rocky Linux (.rpm)
 
-Download the latest `.rpm` package from the [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) page:
+Download the `.rpm` package from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) and install:
 
 ```bash
 sudo dnf install ./glyph-text-extractor-*.rpm
 glyph --setup-shortcuts
 ```
 
-_On openSUSE:_
+### openSUSE (.rpm)
 
 ```bash
 sudo zypper install ./glyph-text-extractor-*.rpm
 glyph --setup-shortcuts
 ```
 
-### Option 3: Arch Linux / Manjaro / EndeavourOS
+### Arch Linux, Manjaro, EndeavourOS
 
-Clone the repository and build via `makepkg`:
+Build and install from the provided `PKGBUILD`:
 
 ```bash
 git clone https://github.com/muhaideennausar/glyph-text-extractor.git
@@ -103,16 +111,16 @@ makepkg -si
 glyph --setup-shortcuts
 ```
 
-### Option 4: Universal Python (`pipx` on any Linux distro)
+### Universal Python (`pipx`)
 
 ```bash
 pipx install git+https://github.com/muhaideennausar/glyph-text-extractor.git
 glyph --setup-shortcuts
 ```
 
-### Option 5: Universal Portable Release Archive (.tar.gz)
+### Portable Release Archive (.tar.gz)
 
-Download `glyph-*-linux-portable.tar.gz` from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases), extract and run the bundled installer:
+Download `glyph-*-linux-portable.tar.gz` from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases), unpack, and run the installer:
 
 ```bash
 tar -xzf glyph-*-linux-portable.tar.gz
@@ -120,7 +128,7 @@ cd glyph-*-linux-all
 ./install.sh
 ```
 
-### Option 6: Native Local Installer (From Source)
+### Source Installation
 
 ```bash
 git clone https://github.com/muhaideennausar/glyph-text-extractor.git
@@ -130,210 +138,145 @@ cd glyph-text-extractor
 
 Ensure system dependencies are installed:
 
-| Distribution                   | Command                                                                                                                                                 |
-| :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Ubuntu / Debian / Pop!\_OS** | `sudo apt install tesseract-ocr tesseract-ocr-eng wl-clipboard python3-pil python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`                                      |
-| **Fedora**                     | `sudo dnf install tesseract tesseract-langpack-eng wl-clipboard python3-pillow python3-gobject gtk4 libadwaita`                                         |
-| **Arch / Manjaro**             | `sudo pacman -S tesseract tesseract-data-eng wl-clipboard python-pillow python-gobject gtk4 libadwaita`                                                 |
-| **openSUSE**                   | `sudo zypper install tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard python3-Pillow python3-gobject typelib-1_0-Gtk-4_0 typelib-1_0-Adw-1` |
+| Distribution | Package Manager Command |
+| :--- | :--- |
+| **Ubuntu / Debian** | `sudo apt install tesseract-ocr tesseract-ocr-eng wl-clipboard python3-pil python3-gi gir1.2-gtk-4.0 gir1.2-adw-1` |
+| **Fedora** | `sudo dnf install tesseract tesseract-langpack-eng wl-clipboard python3-pillow python3-gobject gtk4 libadwaita` |
+| **Arch Linux** | `sudo pacman -S tesseract tesseract-data-eng wl-clipboard python-pillow python-gobject gtk4 libadwaita` |
+| **openSUSE** | `sudo zypper install tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard python3-Pillow python3-gobject typelib-1_0-Gtk-4_0 typelib-1_0-Adw-1` |
 
-### Option 7: Flatpak / Flathub
+### Flatpak / Flathub
 
-Glyph provides a native Flatpak manifest ([`io.github.muhaideennausar.Glyph.yaml`](io.github.muhaideennausar.Glyph.yaml)). For local building and submitting to the Flathub store, refer to the [Flathub Publishing Guide](docs/FLATHUB_GUIDE.md).
-
----
-
-## 🔄 Updating & Upgrading Glyph
-
-To upgrade Glyph when a new version is released:
-
-### Debian / Ubuntu / Linux Mint / Pop!\_OS (.deb)
-
-Download the updated `.deb` package from [Releases](https://github.com/muhaideennausar/glyph-text-extractor/releases) and upgrade:
-
-```bash
-sudo apt install --reinstall ./glyph-text-extractor_*_all.deb
-# Or via dpkg:
-sudo dpkg -i ./glyph-text-extractor_*_all.deb
-```
-
-### Fedora / RHEL / openSUSE (.rpm)
-
-Download the updated `.rpm` package and upgrade:
-
-```bash
-sudo dnf upgrade ./glyph-text-extractor-*.rpm
-# On openSUSE:
-sudo zypper update ./glyph-text-extractor-*.rpm
-```
-
-### Arch Linux / Manjaro / EndeavourOS
-
-Pull the latest source and rebuild:
-
-```bash
-cd glyph-text-extractor
-git pull origin main
-cd packaging/arch && makepkg -si
-```
-
-### Python / pipx
-
-```bash
-pipx upgrade glyph-text-extractor
-# Or reinstall latest from GitHub:
-pipx install --force git+https://github.com/muhaideennausar/glyph-text-extractor.git
-```
-
-### From Source or Portable Archive
-
-```bash
-git pull origin main
-./install.sh
-```
+A Flatpak manifest is provided in [`io.github.muhaideennausar.Glyph.yaml`](io.github.muhaideennausar.Glyph.yaml). For build instructions and Flathub submission steps, see [Flathub Publishing Guide](docs/FLATHUB_GUIDE.md).
 
 ---
 
-## ⌨️ Intelligent Global Shortcuts
+## Keyboard Shortcuts
 
-Glyph includes an automated cross-desktop shortcut setup engine that runs across **GNOME, KDE Plasma, Cinnamon, MATE, XFCE, and tiling WMs (Hyprland, Sway, i3)**:
+### Automated Configuration
+
+Run the shortcut setup assistant to configure global keys for your desktop environment:
 
 ```bash
 glyph --setup-shortcuts
 ```
 
-- **Collision Detection:** If a key combination (e.g. `<Super><Shift>t`) is already claimed by another application, Glyph retrieves and displays the conflicting shortcut's name, command, and key, and asks for your permission before replacing it.
-- **Permission Prompt:** If no collision exists, it still asks for your confirmation before appending the shortcut.
-- **Non-Interactive Mode:** For automated scripts, run with `-y`: `glyph --setup-shortcuts -y`.
-- **Clean Removal:** Run `glyph --remove-shortcuts` to deregister shortcuts at any time.
+- **Collision Detection:** Checks whether keybindings are already registered by the desktop or another application. Displays conflicting commands and prompts for confirmation before overwriting.
+- **Non-Interactive Mode:** For provisioning scripts, pass `-y` to accept defaults without prompting:
+  ```bash
+  glyph --setup-shortcuts -y
+  ```
+- **Deregistration:** Remove all registered Glyph shortcuts:
+  ```bash
+  glyph --remove-shortcuts
+  ```
 
----
+### Default Key Combinations
 
-## 🔐 First-Time Launch & Wayland Permissions
+| Shortcut | Action | Command |
+| :--- | :--- | :--- |
+| `Super + Shift + T` | Review & Edit (Mode B — Default) | `glyph --grab` |
+| `Super + Shift + I` | Instant Capture to Clipboard (Mode A) | `glyph --grab --instant` |
 
-When you trigger Glyph - Text Extractor (`glyph --grab`) for the first time on modern GNOME (Ubuntu 24.04+, Fedora 39+, etc. running Wayland), your desktop will present a system security dialog:
+### Manual Configuration
 
-<div align="center">
-  <blockquote>
-    <strong>Allow Apps to Take Screenshots?</strong><br />
-    <em>An app wants to take screenshots at any time</em><br />
-    <code>[Deny]</code> &nbsp; <code><strong>[Allow]</strong></code>
-  </blockquote>
-</div>
+If you prefer to configure shortcuts manually:
 
-### Why does this appear?
+#### GNOME (Wayland or X11)
+1. Open **Settings** -> **Keyboard** -> **View and Customize Shortcuts** -> **Custom Shortcuts**.
+2. Add a new shortcut:
+   - Name: `Glyph - Review & Edit`
+   - Command: `glyph --grab`
+   - Shortcut: `Super + Shift + T`
+3. Add an instant shortcut (optional):
+   - Name: `Glyph - Instant Capture`
+   - Command: `glyph --grab --instant`
+   - Shortcut: `Super + Shift + I`
 
-- **Wayland Security Isolation:** On modern Wayland compositors, applications are strictly isolated from one another so that background programs cannot silently spy on your screen, passwords, or personal data.
-- **Silent Sniper Snapshot:** To provide an instant screen freeze with Glyph - Text Extractor's custom GTK4 sniper overlay—bypassing GNOME's camera shutter sound, flash, and duplicate OS notifications—Glyph requests a background screenshot via the standard XDG Desktop Portal (`org.freedesktop.portal.Screenshot`).
-- **One-Time Authorization:** Click **Allow**. GNOME permanently remembers your decision in **Settings → Privacy & Security → Screen Capture**. All future extractions will launch instantly without any prompts.
+#### KDE Plasma
+1. Open **System Settings** -> **Shortcuts** -> **Custom Shortcuts** (or **Command Shortcuts** in Plasma 6).
+2. Add a new Global Shortcut pointing to `glyph --grab` for `Meta + Shift + T`.
+3. Add a second shortcut pointing to `glyph --grab --instant` for `Meta + Shift + I`.
 
-> [!TIP]
-> If you ever accidentally click "Deny", you can re-enable permission at any time by opening **Settings → Privacy & Security → Screen Capture** and enabling the permission.
-
----
-
-## ⌨️ Manual Global Keyboard Shortcuts (Optional)
-
-> [!TIP]
-> You do not need to configure shortcuts manually! Simply run `glyph --setup-shortcuts` in your terminal, and Glyph will automatically detect your desktop environment and configure shortcuts with collision detection.
-
-If you prefer to configure shortcuts manually via your desktop environment settings:
-
-### GNOME / Ubuntu / Fedora (Wayland or X11)
-
-1. Open **Settings** → **Keyboard** → **View and Customize Shortcuts** → **Custom Shortcuts**.
-2. Click **+** to add a new shortcut:
-   - **Review & Edit Modal (Mode B — Default):**
-     - **Name:** `Glyph - Review & Edit`
-     - **Command:** `glyph --grab`
-     - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
-   - **Instant Capture to Clipboard (Mode A):**
-     - **Name:** `Glyph - Instant Text Extractor`
-     - **Command:** `glyph --grab --instant`
-     - **Shortcut:** <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd>
-
-### Hyprland (`~/.config/hypr/hyprland.conf`)
-
+#### Hyprland (`~/.config/hypr/hyprland.conf`)
 ```ini
 bind = SUPER SHIFT, T, exec, glyph --grab
 bind = SUPER SHIFT, I, exec, glyph --grab --instant
 ```
 
-### Sway (`~/.config/sway/config`) / i3 (`~/.config/i3/config`)
-
+#### Sway (`~/.config/sway/config`) / i3 (`~/.config/i3/config`)
 ```ini
 bindsym $mod+Shift+t exec glyph --grab
 bindsym $mod+Shift+i exec glyph --grab --instant
 ```
 
-### KDE Plasma
+---
 
-1. Open **System Settings** → **Shortcuts** → **Custom Shortcuts**.
-2. Add **Edit** → **New** → **Global Shortcut** → **Command/URL**.
-3. Set Trigger to <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> and Command to `glyph --grab` (Review & Edit).
-4. _(Optional)_ Add a second shortcut for <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> and Command `glyph --grab --instant` (Instant Mode A).
+## Wayland Permissions Notice
+
+On modern Wayland compositors (such as GNOME on Ubuntu 24.04+ or Fedora 39+), the desktop may display a security prompt on first launch:
+
+> **Allow Apps to Take Screenshots?**  
+> *An app wants to take screenshots at any time*  
+> `[Deny]` &nbsp; `[Allow]`
+
+### Why this prompt appears
+Wayland isolates application windows for security. To capture screen contents silently—without system shutter noises or flashes—Glyph requests a background screenshot through the standard FreeDesktop XDG Desktop Portal (`org.freedesktop.portal.Screenshot`).
+
+Selecting **Allow** saves this authorization in your system settings (**Settings -> Privacy & Security -> Screen Capture**). Subsequent captures execute immediately without prompts.
 
 ---
 
-## 🛠️ CLI Usage & Options
+## CLI Reference
+
+```
+Usage: glyph [OPTIONS]
+
+Options:
+  -g, --grab            Trigger screen region selection (default behavior).
+  -e, --edit            Open review & edit window before copying text (Mode B).
+  -i, --instant         Copy text directly to clipboard without opening editor (Mode A).
+  -f, --file PATH       Extract text from an existing image file instead of capturing.
+  -l, --lang CODE       Tesseract language code (e.g. eng, deu, fra, spa).
+  -p, --psm NUM         Tesseract Page Segmentation Mode (overrides smart PSM).
+  -s, --scale FACTOR    Image upscale factor before OCR (default: adaptive 3.0).
+  --notify              Enable desktop notifications (overrides config).
+  --no-notify           Suppress desktop notifications (overrides config).
+  --copy                Enable clipboard copy (overrides config).
+  --no-copy             Disable clipboard copy (overrides config).
+  --stdout              Print extracted text directly to standard output.
+  --debug               Enable debug logging output.
+  --setup-shortcuts     Interactively configure global desktop shortcuts.
+  -y                    Accept default prompts non-interactively during shortcut setup.
+  --remove-shortcuts    Remove registered global desktop shortcuts.
+  -v, --version         Show application version and diagnose installation path conflicts.
+  -h, --help            Show this help message and exit.
+```
+
+### Common Commands
 
 ```bash
-# Print version and diagnose dual-install conflicts
-glyph --version
-glyph -v
-
-# Interactive screen capture with review & edit modal (Mode B — Default)
-glyph --grab
+# Capture screen region and open editor (Mode B — default)
 glyph
 
-# Instant screen capture and direct copy to clipboard (Mode A)
-glyph --grab --instant
+# Capture screen region and copy directly to clipboard (Mode A)
 glyph -i
 
-# Force open in Review & Edit modal
-glyph --grab --edit
+# Extract text from an existing image file and print to stdout
+glyph -f document.png --stdout --no-copy
 
-# Extract text directly from an existing image file
-glyph -f document_scan.png
+# Extract text in German using single-line segmentation
+glyph -l deu --psm 7
 
-# Extract in another language (requires tesseract-ocr-<lang>)
-glyph --grab -l deu   # German
-glyph --grab -l fra   # French
-glyph --grab -l spa   # Spanish
-
-# Custom Page Segmentation Mode (defaults to smart geometry-based PSM)
-glyph --grab --psm 3  # Fully automatic page segmentation
-glyph --grab --psm 6  # Assume a single uniform block of text
-glyph --grab --psm 7  # Treat image as a single text line
-glyph --grab --psm 11 # Find as much text as possible (sparse text)
-
-# Scale factor for low-resolution captures (default: adaptive 3.0x upscale)
-glyph --grab --scale 2.0
-
-# Print extracted text directly to stdout
-glyph --grab --stdout
-
-# Suppress or force desktop notifications
-glyph --grab --no-notify
-glyph --grab --notify
-
-# Copy control
-glyph --grab --no-copy
-
-# Debug diagnostics (detailed image and OCR pipeline logs)
-glyph --grab --debug
-
-# Interactively configure or remove global shortcuts
-glyph --setup-shortcuts
-glyph --setup-shortcuts -y   # Non-interactive auto-yes
-glyph --remove-shortcuts
+# Run non-interactive shortcut setup
+glyph --setup-shortcuts -y
 ```
 
 ---
 
-## ⚙️ Configuration (`~/.config/glyph/config.json`)
+## Configuration
 
-Glyph follows the XDG Base Directory specification. Configuration settings are automatically created on first launch:
+Glyph complies with the XDG Base Directory specification. Configuration settings are stored in `~/.config/glyph/config.json`:
 
 ```json
 {
@@ -360,35 +303,79 @@ Glyph follows the XDG Base Directory specification. Configuration settings are a
 }
 ```
 
-### Page Segmentation Modes (`default_psm` & `smart_psm`)
+### Configuration Options
 
-- **`smart_psm: true` (Default):** Dynamically analyzes the crop aspect ratio and dimensions:
-  - Single lines ($\ge 3:1$ aspect ratio) $\to$ **PSM 7**
-  - Text blocks ($\le 300\text{px}$ height) $\to$ **PSM 6**
-  - Full pages $\to$ **PSM 3**
-- **Manual override:** Set `"smart_psm": false` and specify `"default_psm": 3` or pass `--psm <N>` via CLI.
+| Section | Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `general` | `default_mode` | string | `"edit"` | Default behavior: `"edit"` (Mode B modal) or `"instant"` (Mode A clipboard). |
+| `general` | `auto_copy_to_clipboard` | boolean | `true` | Automatically copies text to system clipboard. |
+| `general` | `show_notifications` | boolean | `true` | Displays desktop notifications after extraction. |
+| `ocr` | `default_engine` | string | `"tesseract"` | OCR engine backend. |
+| `ocr` | `default_language` | string | `"eng"` | Default Tesseract language code. |
+| `ocr` | `default_psm` | integer | `3` | Default Page Segmentation Mode if `smart_psm` is disabled. |
+| `ocr` | `smart_psm` | boolean | `true` | Dynamically selects PSM 7 (single line), PSM 6 (block), or PSM 3 (page). |
+| `ocr` | `enable_adaptive_scaling` | boolean | `true` | Upscales small crops for improved character recognition. |
+| `ocr` | `enhance_edges` | boolean | `false` | Applies unsharp mask filtering prior to recognition. |
+| `ocr` | `preserve_spaces` | boolean | `true` | Instructs Tesseract to preserve interword spacing. |
+| `editor` | `window_width` | integer | `640` | Initial width of the review editor window. |
+| `editor` | `window_height` | integer | `440` | Initial height of the review editor window. |
+| `editor` | `remember_window_size` | boolean | `true` | Persists window dimensions between sessions. |
 
-Precedence order:
-`CLI Flags > ~/.config/glyph/config.json > Factory Defaults`
+Precedence: `CLI Flags > ~/.config/glyph/config.json > Built-in Defaults`
 
 ---
 
-## 🧪 Testing
+## Testing
 
-Glyph comes with a comprehensive test suite of 65 unit and edge-case tests covering corrupt headers, 0-byte aborts, 100MP gigapixel bombs, portal timeouts, statement break preservation, markup escaping, and desktop shortcut collision detection:
+Run the automated test suite:
 
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
+The test suite covers:
+- Image validation (empty files, non-existent paths, resolution thresholds).
+- Preprocessing operations (Otsu thresholding, alpha composition, unsharp masking).
+- OCR engine behavior (Page Segmentation Modes, timeout handling, multiline preservation).
+- Desktop detection and shortcut managers (GNOME, KDE Plasma, XFCE, Sway, Hyprland).
+- Shortcut collision detection and resolution prompts.
+
 ---
 
-## 📜 Changelog
+## Upgrading
 
-See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes, enhancements, and fixes across all releases.
+### Debian / Ubuntu (.deb)
+```bash
+sudo apt install --reinstall ./glyph-text-extractor_*_all.deb
+```
+
+### Fedora / openSUSE (.rpm)
+```bash
+sudo dnf upgrade ./glyph-text-extractor-*.rpm
+# openSUSE:
+sudo zypper update ./glyph-text-extractor-*.rpm
+```
+
+### Arch Linux
+```bash
+cd glyph-text-extractor
+git pull origin main
+cd packaging/arch && makepkg -si
+```
+
+### Python / pipx
+```bash
+pipx upgrade glyph-text-extractor
+```
 
 ---
 
-## 📄 License
+## Changelog
 
-GPL-3.0-or-later. See [LICENSE](LICENSE) for details.
+See [CHANGELOG.md](CHANGELOG.md) for release history and migration details.
+
+---
+
+## License
+
+GNU General Public License v3.0 or later. See [LICENSE](LICENSE) for details.
