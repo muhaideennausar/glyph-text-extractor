@@ -1,6 +1,6 @@
 app-id: io.github.muhaideennausar.Glyph
 runtime: org.gnome.Platform
-runtime-version: "47"
+runtime-version: "49"
 sdk: org.gnome.Sdk
 command: glyph
 
@@ -9,7 +9,9 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --share=ipc
-  # Notifications
+  # Portal screenshot access (some compositors write snapshots to ~/Pictures)
+  - --filesystem=xdg-pictures:ro
+  # System notifications
   - --talk-name=org.freedesktop.Notifications
 
 build-options:
@@ -34,9 +36,13 @@ modules:
         sha256: 2b3e1254b1cca381e77c819b59ca99774ff43530209b9aeb511e1d46588a64f6
 
   - name: tesseract
+    buildsystem: cmake-ninja
     config-opts:
-      - --disable-static
-      - --with-tessdata-prefix=/app/share/tessdata
+      - -DBUILD_SHARED_LIBS=ON
+      - -DENABLE_LSTMTRAINING=OFF
+      - -DBUILD_TRAINING_TOOLS=OFF
+      - -DBUILD_TESTS=OFF
+      - -DTESSDATA_PREFIX=/app/share/tessdata
     sources:
       - type: archive
         url: https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.4.1.tar.gz
@@ -81,5 +87,9 @@ modules:
       - install -Dm644 assets/icons/scalable/io.github.muhaideennausar.Glyph-symbolic.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.muhaideennausar.Glyph-symbolic.svg
       - for size in 48x48 64x64 128x128 256x256 512x512; do install -Dm644 assets/icons/hicolor/${size}/apps/io.github.muhaideennausar.Glyph.png ${FLATPAK_DEST}/share/icons/hicolor/${size}/apps/io.github.muhaideennausar.Glyph.png; done
     sources:
-      - type: dir
-        path: .
+      # Official release source for Flathub production builds:
+      - type: git
+        url: https://github.com/muhaideennausar/glyph-text-extractor.git
+        tag: v0.2.2
+        # commit hash will be pinned to release tag v0.2.2
+      # (Note for local testing: switch to type: dir, path: .)

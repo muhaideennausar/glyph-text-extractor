@@ -7,7 +7,6 @@ import sys
 import argparse
 import logging
 from typing import Optional
-from PIL import Image
 
 from glyph import __version__, __app_name__
 from glyph.capture import ScreenCapture
@@ -225,6 +224,33 @@ def run_pipeline(
     return extracted_text
 
 
+def check_runtime_dependencies() -> None:
+    """Verifies that core runtime dependencies are available before pipeline execution."""
+    missing = []
+    try:
+        import PIL
+    except ImportError:
+        missing.append("Pillow (PIL)")
+
+    try:
+        import gi
+        gi.require_version("Gtk", "4.0")
+        gi.require_version("Adw", "1")
+    except (ImportError, ValueError):
+        missing.append("PyGObject / GTK4 / Libadwaita")
+
+    if missing:
+        sys.stderr.write(
+            f"Error: Missing required Python dependencies: {', '.join(missing)}\n\n"
+            "Please install the required packages for your distribution:\n"
+            "  • openSUSE:      sudo zypper install python3-Pillow python3-gobject gtk4 libadwaita-1-0 tesseract-ocr\n"
+            "  • Fedora:        sudo dnf install python3-pillow python3-gobject gtk4 libadwaita tesseract\n"
+            "  • Debian/Ubuntu: sudo apt install python3-pil python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 tesseract-ocr\n"
+            "  • Arch Linux:    sudo pacman -S python-pillow python-gobject gtk4 libadwaita tesseract\n\n"
+        )
+        sys.exit(1)
+
+
 def main() -> None:
     args = parse_args()
 
@@ -241,6 +267,9 @@ def main() -> None:
         from glyph.shortcuts import remove_global_shortcuts
         remove_global_shortcuts()
         sys.exit(0)
+
+    # Verify runtime dependencies before executing capture or pipeline
+    check_runtime_dependencies()
 
     # 1. Load configuration from XDG location
     config_mgr = ConfigManager()

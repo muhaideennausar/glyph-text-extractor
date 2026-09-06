@@ -137,6 +137,10 @@ Ensure system dependencies are installed:
 | **Arch / Manjaro**             | `sudo pacman -S tesseract tesseract-data-eng wl-clipboard python-pillow python-gobject gtk4 libadwaita`                               |
 | **openSUSE**                   | `sudo zypper install tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard python3-Pillow python3-gobject gtk4 libadwaita-1-0` |
 
+### Option 7: Flatpak / Flathub
+
+Glyph provides a native Flatpak manifest ([`io.github.muhaideennausar.Glyph.yaml`](io.github.muhaideennausar.Glyph.yaml)). For local building and submitting to the Flathub store, refer to the [Flathub Publishing Guide](docs/FLATHUB_GUIDE.md).
+
 ---
 
 ## 🔄 Updating & Upgrading Glyph
@@ -267,7 +271,7 @@ bindsym $mod+Shift+i exec glyph --grab --instant
 1. Open **System Settings** → **Shortcuts** → **Custom Shortcuts**.
 2. Add **Edit** → **New** → **Global Shortcut** → **Command/URL**.
 3. Set Trigger to <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> and Command to `glyph --grab` (Review & Edit).
-4. *(Optional)* Add a second shortcut for <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> and Command `glyph --grab --instant` (Instant Mode A).
+4. _(Optional)_ Add a second shortcut for <kbd>Meta</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> and Command `glyph --grab --instant` (Instant Mode A).
 
 ---
 

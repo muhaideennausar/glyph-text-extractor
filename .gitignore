@@ -45,3 +45,4 @@ htmlcov/
 *.md
 !README.md
 !CHANGELOG.md
+!docs/*.md

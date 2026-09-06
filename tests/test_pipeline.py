@@ -175,5 +175,26 @@ class TestGlyphPipeline(unittest.TestCase):
             self.assertEqual(text, "")
 
 
+    def test_check_runtime_dependencies_success(self):
+        """Tests check_runtime_dependencies passes when dependencies are present."""
+        from glyph.app import check_runtime_dependencies
+        # Should execute cleanly without raising SystemExit
+        check_runtime_dependencies()
+
+    def test_check_runtime_dependencies_missing_pil(self):
+        """Tests check_runtime_dependencies exits gracefully with error message if PIL is missing."""
+        from glyph.app import check_runtime_dependencies
+        import io
+        with patch.dict("sys.modules", {"PIL": None}):
+            stderr_buf = io.StringIO()
+            with patch("sys.stderr", stderr_buf), self.assertRaises(SystemExit) as ctx:
+                check_runtime_dependencies()
+            self.assertEqual(ctx.exception.code, 1)
+            err_output = stderr_buf.getvalue()
+            self.assertIn("Pillow (PIL)", err_output)
+            self.assertIn("openSUSE", err_output)
+            self.assertIn("python3-Pillow", err_output)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

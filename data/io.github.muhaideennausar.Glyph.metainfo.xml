@@ -48,8 +48,23 @@
     <category>Office</category>
     <category>OCR</category>
   </categories>
+  <branding>
+    <color type="primary" scheme_preference="light">#0040ff</color>
+    <color type="primary" scheme_preference="dark">#0030bf</color>
+  </branding>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.2.2" date="2026-09-06">
+      <description>
+        <p>Cross-distro RPM compatibility release with openSUSE dependency resolution, dynamic Python runtime detection, and Flathub packaging preparation.</p>
+        <ul>
+          <li>Enhanced RPM spec with rich Boolean dependencies resolving python3-Pillow, tesseract-ocr, and libadwaita-1-0 on openSUSE Leap and Tumbleweed</li>
+          <li>Dynamic Python 3 (>= 3.10) interpreter resolution in RPM and native launchers, preventing missing PIL errors on multi-Python distros</li>
+          <li>Added graceful runtime dependency validation with distribution-specific package manager instructions</li>
+          <li>Flathub Flatpak packaging readiness with GNOME 49 runtime and store branding metadata</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.1" date="2026-09-06">
       <description>
         <p>Cross-distro polish and packaging stability release for Arch Linux, Fedora, and Debian environments.</p>

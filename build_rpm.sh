@@ -22,7 +22,14 @@ Summary:        Lightning-fast screen text extractor for Linux
 License:        GPL-3.0-or-later
 URL:            https://github.com/muhaideennausar/glyph-text-extractor
 BuildArch:      noarch
-Requires:       python3, python3-pillow, python3-gobject, gtk4, libadwaita, tesseract, tesseract-langpack-eng, wl-clipboard
+Requires:       python3
+Requires:       (python3dist(pillow) or python3-pillow or python3-Pillow)
+Requires:       (python3dist(pygobject) or python3-gobject or python3-gi)
+Requires:       gtk4
+Requires:       (libadwaita or libadwaita-1-0)
+Requires:       (tesseract or tesseract-ocr)
+Requires:       (tesseract-langpack-eng or tesseract-ocr-traineddata-english or tesseract-data-eng)
+Requires:       wl-clipboard
 
 %description
 PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.
@@ -40,7 +47,23 @@ mkdir -p %{buildroot}/usr/share/icons/hicolor/scalable/apps
 cat << 'BIN_EOF' > %{buildroot}/usr/bin/glyph
 #!/usr/bin/env bash
 export PYTHONPATH="/usr/share/glyph:\${PYTHONPATH}"
-exec /usr/bin/python3 -m glyph "\$@"
+
+# Locate Python 3 interpreter (>= 3.10) with PIL and gi support
+PYTHON_CMD=""
+for py in python3 python3.13 python3.12 python3.11 python3.10 /usr/bin/python3; do
+    if command -v "$py" >/dev/null 2>&1; then
+        if "$py" -c "import sys, PIL, gi; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>/dev/null; then
+            PYTHON_CMD="$py"
+            break
+        fi
+    fi
+done
+
+if [ -z "$PYTHON_CMD" ]; then
+    PYTHON_CMD="python3"
+fi
+
+exec "$PYTHON_CMD" -m glyph "\$@"
 BIN_EOF
 chmod 755 %{buildroot}/usr/bin/glyph
 

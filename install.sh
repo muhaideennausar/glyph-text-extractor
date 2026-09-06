@@ -36,6 +36,7 @@ if [ ${#MISSING_PKGS[@]} -gt 0 ]; then
     echo "  Ubuntu/Debian: sudo apt update && sudo apt install -y ${MISSING_PKGS[*]}"
     echo "  Fedora:        sudo dnf install -y python3-pillow python3-gobject gtk4 libadwaita tesseract wl-clipboard"
     echo "  Arch:          sudo pacman -S --needed python-pillow python-gobject gtk4 libadwaita tesseract tesseract-data-eng wl-clipboard"
+    echo "  openSUSE:      sudo zypper install -y python3-Pillow python3-gobject gtk4 libadwaita-1-0 tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard"
     echo ""
 fi
 
@@ -61,7 +62,23 @@ cat << 'EOF' > "$BIN_DIR/glyph"
 #!/usr/bin/env bash
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 export PYTHONPATH="$HOME/.local/lib/glyph:$PYTHONPATH"
-exec /usr/bin/env python3 -m glyph "$@"
+
+# Locate Python 3 interpreter (>= 3.10) with PIL and gi support
+PYTHON_CMD=""
+for py in python3 python3.13 python3.12 python3.11 python3.10 /usr/bin/python3; do
+    if command -v "$py" >/dev/null 2>&1; then
+        if "$py" -c "import sys, PIL, gi; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>/dev/null; then
+            PYTHON_CMD="$py"
+            break
+        fi
+    fi
+done
+
+if [ -z "$PYTHON_CMD" ]; then
+    PYTHON_CMD="python3"
+fi
+
+exec "$PYTHON_CMD" -m glyph "$@"
 EOF
 
 chmod +x "$BIN_DIR/glyph"
