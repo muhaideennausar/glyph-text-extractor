@@ -49,99 +49,53 @@ jobs:
           cp -r src assets data install.sh uninstall.sh pyproject.toml README.md LICENSE "$ARCHIVE_DIR/"
           tar -czf "dist/glyph-${VERSION}-linux-portable.tar.gz" "$ARCHIVE_DIR"
 
+      - name: Generate Artifact Checksums
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS.txt
+          cd ..
+
+      - name: Extract Release Notes from CHANGELOG.md
+        run: |
+          python3 -c '
+          import re, os
+          tag = os.environ.get("GITHUB_REF_NAME", "")
+          version = tag.lstrip("v")
+          
+          with open("CHANGELOG.md", "r", encoding="utf-8") as f:
+              content = f.read()
+              
+          pattern = rf"## \[{re.escape(version)}\][^\n]*\n(.*?)(?=\n## \[|\Z)"
+          match = re.search(pattern, content, re.DOTALL)
+          if match:
+              notes = match.group(1).strip()
+          else:
+              notes = f"Release {tag}"
+              
+          body = f"""## Glyph - Text Extractor {tag}
+
+          {notes}
+
+          ### Verification
+          Verify asset integrity with SHA-256 checksums:
+          ```bash
+          sha256sum -c SHA256SUMS.txt
+          ```
+          """
+          with open("RELEASE_NOTES.md", "w", encoding="utf-8") as out:
+              out.write(body.strip() + "\n")
+          '
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: "Glyph - Text Extractor ${{ github.ref_name }}"
-          body: |
-            # Glyph - Text Extractor ${{ github.ref_name }} 🔍
-
-            We are thrilled to announce the official release of **Glyph - Text Extractor**, bringing the seamless, lightning-fast experience of Microsoft PowerToys Text Extractor natively to Linux desktops.
-
-            Glyph is engineered from the ground up for modern Wayland and X11 environments, combining an elegant GTK4 / Libadwaita interface with sub-50ms offline OCR execution.
-
-            ---
-
-            ## 🌟 Key Highlights
-
-            ### 🎯 Mode A: Instant Sniper Screen Capture
-            * **Silent Precision Crop:** Instant screen freeze under a darkened translucent veil (`rgba(0, 0, 0, 0.45)`) with precision crosshair cursor.
-            * **Signature Branding:** Electric blue dashed selection border with corner accent brackets matching Glyph's visual identity.
-            * **Real-Time Dimension HUD:** Floating chip displaying live crop resolution (`w × h px`) during drag.
-            * **Zero Shutter Noise:** Direct background snapshot bypasses noisy camera sounds, flashes, and duplicate system notifications.
-            * **Instant Synchronization:** Extracted text is copied directly to your clipboard in milliseconds.
-
-            ### 📝 Mode B: Interactive Review & Format Modal
-            * **Native Libadwaita Interface:** Elegant modal adhering to GNOME Human Interface Guidelines.
-            * **One-Click Sanitization:**
-              * **Single Line:** Intelligently joins broken lines from multi-column PDFs, code snippets, and presentation slides into continuous sentences.
-              * **Trim Whitespace:** Strips leading/trailing whitespace and removes redundant empty lines.
-            * **Live Statistics:** Real-time word and character count indicator.
-            * **Keyboard Productivity:** Press `Ctrl + Enter` to copy and close; press `Escape` to cancel.
-            * **Geometry Memory:** Automatically remembers your preferred window dimensions across sessions.
-
-            ### 🔒 Privacy & Architecture
-            * **100% Offline & Private:** Powered locally by Tesseract OCR 5.4.1 neural LSTM models. Zero telemetry, zero analytics, zero network requests.
-            * **Secure Intermediate Storage:** Captures use private `0o600` permissions with automated memory wiping and instant unlinking after extraction.
-            * **DoS Protection:** Enforces a 50-megapixel decompression bomb defense threshold.
-            * **Minimal Footprint:** Consumes under 35MB RAM with lazy UI instantiation.
-
-            ### 🖥️ Universal Linux Desktop Compatibility
-            * **Cross-Desktop Shortcuts:** Automated intelligent global shortcut setup across GNOME, KDE Plasma, Cinnamon, MATE, XFCE, and tiling WMs (Hyprland, Sway, i3) with collision detection!
-            * **Wayland & X11 Ready:** Tested and verified on GNOME 44+, KDE Plasma 6, Hyprland, Sway, and X11 window managers.
-            * **XDG Standards:** Fully compliant with XDG Base Directory specifications and XDG Desktop Portal standards.
-
-            ---
-
-            ## ⌨️ Recommended Global Shortcuts
-            * **Instant Capture (Mode A):** `Super + Shift + T` → `glyph --grab`
-            * **Review & Edit (Mode B):** `Super + Shift + E` → `glyph --grab --edit`
-            * **Setup Shortcuts:** Run `glyph --setup-shortcuts` anytime!
-
-            ---
-
-            ## 📦 Multi-Distro Installation Matrix
-
-            ### 1. Debian / Ubuntu / Linux Mint / Pop!_OS (.deb)
-            Download `glyph-text-extractor_*.deb` from below and install:
-            ```bash
-            sudo apt install ./glyph-text-extractor_*.deb
-            ```
-
-            ### 2. Fedora / RHEL / openSUSE (.rpm)
-            Download `glyph-text-extractor-*.rpm` from below and install:
-            ```bash
-            sudo dnf install ./glyph-text-extractor-*.rpm
-            # On openSUSE:
-            sudo zypper install ./glyph-text-extractor-*.rpm
-            ```
-
-            ### 3. Arch Linux / Manjaro / EndeavourOS
-            Clone and build with makepkg:
-            ```bash
-            git clone https://github.com/muhaideennausar/glyph-text-extractor.git
-            cd glyph-text-extractor/packaging/arch
-            makepkg -si
-            ```
-
-            ### 4. Universal Python (`pipx` on any distribution)
-            ```bash
-            pipx install git+https://github.com/muhaideennausar/glyph-text-extractor.git
-            glyph --setup-shortcuts
-            ```
-
-            ### 5. Universal Portable Tarball (Any Linux Distribution)
-            Download `glyph-*-linux-portable.tar.gz` from below, extract and install:
-            ```bash
-            tar -xzf glyph-*-linux-portable.tar.gz
-            cd glyph-*-linux-portable
-            ./install.sh
-            ```
+          body_path: RELEASE_NOTES.md
           files: |
             dist/*.whl
             dist/*.tar.gz
             dist/*.deb
             dist/*.rpm
-          generate_release_notes: true
+            dist/SHA256SUMS.txt
           draft: false
           prerelease: false
