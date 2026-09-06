@@ -54,6 +54,17 @@
   </branding>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.2.3" date="2026-09-06">
+      <description>
+        <p>KDE Plasma shortcut integration overhaul, native Spectacle screen capture, automated shortcut setup, and VM software rendering fallback.</p>
+        <ul>
+          <li>Fixed KDE Plasma shortcut registration with correct Qt key sequences, desktop action mapping (_launch, Editor, Instant), and kwriteconfig notification</li>
+          <li>Added native KDE Spectacle screenshot engine support for fast background snapshots and interactive region capture</li>
+          <li>Automated global shortcut registration in user installer and added clear post-install guidance in RPM packages</li>
+          <li>Added VM software rendering fallback (GSK_RENDERER=cairo) to prevent Mesa Zink errors in virtualized environments</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.2" date="2026-09-06">
       <description>
         <p>Cross-distro RPM compatibility release with openSUSE dependency resolution, dynamic Python runtime detection, and Flathub packaging preparation.</p>

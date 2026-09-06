@@ -250,6 +250,34 @@ and narrow columns."""
         result = ScreenCapture._capture_via_scrot()
         self.assertIsNone(result)
 
+    @patch("subprocess.run")
+    def test_spectacle_region_cancellation(self, mock_run):
+        """Tests that spectacle cancellation (non-zero return code) returns None."""
+        mock_proc = MagicMock()
+        mock_proc.returncode = 1
+        mock_run.return_value = mock_proc
+
+        result = ScreenCapture._capture_via_spectacle_region()
+        self.assertIsNone(result)
+
+    @patch("subprocess.run")
+    def test_spectacle_region_success(self, mock_run):
+        """Tests that spectacle successful capture creates and returns valid path."""
+        def fake_run(cmd, *args, **kwargs):
+            out_file = cmd[-1]
+            with open(out_file, "wb") as f:
+                f.write(b"fake_spectacle_png")
+            mock_proc = MagicMock()
+            mock_proc.returncode = 0
+            return mock_proc
+
+        mock_run.side_effect = fake_run
+        result = ScreenCapture._capture_via_spectacle_region()
+        self.assertIsNotNone(result)
+        self.assertTrue(os.path.exists(result))
+        if os.path.exists(result):
+            os.remove(result)
+
     # -------------------------------------------------------------------------
     # 7. Sniper Overlay Geometry & Edge Cases
     # -------------------------------------------------------------------------

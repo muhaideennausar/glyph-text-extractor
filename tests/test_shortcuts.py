@@ -157,5 +157,71 @@ class TestGnomeShortcutManager(unittest.TestCase):
         self.assertEqual(conflict.command, "old-tool-cmd")
 
 
+class TestKdeShortcutManager(unittest.TestCase):
+    """Tests KDE Plasma shortcut management, key sequence conversion, and action mappings."""
+
+    def test_to_kde_binding_conversion(self):
+        from glyph.shortcuts import to_kde_binding
+        self.assertEqual(to_kde_binding("<Super><Shift>t"), "Meta+Shift+T")
+        self.assertEqual(to_kde_binding("<Super><Shift>i"), "Meta+Shift+I")
+        self.assertEqual(to_kde_binding("<Ctrl><Alt>v"), "Ctrl+Alt+V")
+        self.assertEqual(to_kde_binding("<Super>e"), "Meta+E")
+
+    @patch("shutil.which", return_value="/usr/bin/kwriteconfig6")
+    @patch("subprocess.check_call")
+    def test_set_shortcut_mode_b_registers_launch_and_editor(self, mock_check_call, _mock_which):
+        from glyph.shortcuts import KdeShortcutManager
+        target = ShortcutTarget(
+            identifier="glyph-mode-b",
+            name="Glyph - Review & Edit",
+            command="glyph --grab",
+            binding="<Super><Shift>t",
+            description="Mode B Review & Edit",
+        )
+        success = KdeShortcutManager.set_shortcut(target)
+        self.assertTrue(success)
+
+        # Check call arguments
+        calls = [c[0][0] for c in mock_check_call.call_args_list]
+        groups = [c[c.index("--group") + 1] for c in calls if "--group" in c]
+        keys = [c[c.index("--key") + 1] for c in calls if "--key" in c]
+
+        self.assertTrue(all(g == "io.github.muhaideennausar.Glyph.desktop" for g in groups))
+        self.assertIn("_k_friendly_name", keys)
+        self.assertIn("_launch", keys)
+        self.assertIn("Editor", keys)
+
+    @patch("shutil.which", return_value="/usr/bin/kwriteconfig6")
+    @patch("subprocess.check_call")
+    def test_set_shortcut_mode_a_registers_instant(self, mock_check_call, _mock_which):
+        from glyph.shortcuts import KdeShortcutManager
+        target = ShortcutTarget(
+            identifier="glyph-mode-a",
+            name="Glyph - Instant Text Extractor",
+            command="glyph --grab --instant",
+            binding="<Super><Shift>i",
+            description="Mode A Instant",
+        )
+        success = KdeShortcutManager.set_shortcut(target)
+        self.assertTrue(success)
+
+        calls = [c[0][0] for c in mock_check_call.call_args_list]
+        keys = [c[c.index("--key") + 1] for c in calls if "--key" in c]
+        self.assertIn("Instant", keys)
+
+    @patch("shutil.which", return_value="/usr/bin/kwriteconfig6")
+    @patch("subprocess.check_call")
+    def test_remove_shortcuts_kde(self, mock_check_call, _mock_which):
+        from glyph.shortcuts import KdeShortcutManager
+        res = KdeShortcutManager.remove_shortcuts()
+        self.assertTrue(res)
+
+        calls = [c[0][0] for c in mock_check_call.call_args_list]
+        keys = [c[c.index("--key") + 1] for c in calls if "--key" in c]
+        self.assertIn("_launch", keys)
+        self.assertIn("Editor", keys)
+        self.assertIn("Instant", keys)
+
+
 if __name__ == "__main__":
     unittest.main()

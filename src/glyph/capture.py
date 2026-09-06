@@ -120,7 +120,16 @@ class ScreenCapture:
             except Exception as e:
                 logger.debug(f"wlroots capture failed: {e}")
 
-        # 3. Try X11 maim / scrot
+        # 3. Try KDE Plasma native region capture via spectacle
+        if shutil.which("spectacle"):
+            try:
+                path = cls._capture_via_spectacle_region()
+                if path:
+                    return path
+            except Exception as e:
+                logger.debug(f"spectacle region capture failed: {e}")
+
+        # 4. Try X11 maim / scrot
         if is_x11:
             if shutil.which("maim"):
                 try:
@@ -134,7 +143,7 @@ class ScreenCapture:
                 except Exception as e:
                     logger.debug(f"scrot capture failed: {e}")
 
-        # 4. Universal Safety Net: XDG Desktop Portal (GNOME, KDE Plasma, Flatpak, etc.)
+        # 5. Universal Safety Net: XDG Desktop Portal (GNOME, KDE Plasma, Flatpak, etc.)
         try:
             portal_path = cls._capture_via_portal(interactive=True)
             if portal_path:
@@ -146,8 +155,34 @@ class ScreenCapture:
 
         raise PortalUnavailableError(
             "No compatible screenshot utility found.\n"
-            "Ensure XDG Desktop Portal, slurp+grim, or maim is installed."
+            "Ensure XDG Desktop Portal, slurp+grim, spectacle, or maim is installed."
         )
+
+    @classmethod
+    def _capture_via_spectacle_region(cls) -> Optional[str]:
+        """Captures a rectangular region interactively using KDE Spectacle."""
+        temp_path = _create_secure_temp_file(prefix="glyph_spec_crop_", suffix=".png")
+        try:
+            # -b: background mode (no main UI window)
+            # -r: rectangular region selection
+            # -n: suppress desktop notification
+            # -o: output file
+            proc = subprocess.run(
+                ["spectacle", "-b", "-n", "-r", "-o", temp_path],
+                timeout=120,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                return temp_path
+        except Exception as e:
+            logger.debug(f"Spectacle region capture failed: {e}")
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
+        return None
 
     @classmethod
     def _capture_fullscreen_snapshot(cls) -> Optional[str]:
@@ -174,6 +209,26 @@ class ScreenCapture:
                         os.remove(temp_path)
                     except OSError:
                         pass
+
+        # 2. KDE Plasma (spectacle captures background snapshot instantly)
+        if shutil.which("spectacle") and any(d in desktop for d in ("kde", "plasma")):
+            temp_path = _create_secure_temp_file(prefix="glyph_spec_full_", suffix=".png")
+            try:
+                proc = subprocess.run(
+                    ["spectacle", "-b", "-n", "-o", temp_path],
+                    timeout=5,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                if proc.returncode == 0 and os.path.exists(temp_path) and os.path.getsize(temp_path) > 0:
+                    return temp_path
+            except Exception as e:
+                logger.debug(f"spectacle fullscreen capture failed: {e}")
+            if os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                except OSError:
+                    pass
 
         # 2. X11 desktops (maim / scrot)
         if is_x11:

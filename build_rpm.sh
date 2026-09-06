@@ -68,6 +68,25 @@ for size in 48x48 64x64 128x128 256x256 512x512; do
   fi
 done
 
+%post
+/usr/bin/update-desktop-database &> /dev/null || :
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+  /usr/bin/gtk-update-icon-cache -q -t /usr/share/icons/hicolor &> /dev/null || :
+fi
+echo ""
+echo "================================================================="
+echo " Glyph - Text Extractor successfully installed!"
+echo " To configure desktop shortcuts (Super+Shift+T) for your session:"
+echo "   glyph --setup-shortcuts"
+echo "================================================================="
+echo ""
+
+%postun
+/usr/bin/update-desktop-database &> /dev/null || :
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+  /usr/bin/gtk-update-icon-cache -q -t /usr/share/icons/hicolor &> /dev/null || :
+fi
+
 %files
 %defattr(-,root,root,-)
 /usr/bin/glyph

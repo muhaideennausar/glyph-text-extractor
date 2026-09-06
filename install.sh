@@ -63,6 +63,14 @@ cat << 'EOF' > "$BIN_DIR/glyph"
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 export PYTHONPATH="$HOME/.local/lib/glyph:$PYTHONPATH"
 
+# Fall back to software rendering if running in a VM without 3D acceleration
+if [ -z "$LIBGL_ALWAYS_SOFTWARE" ] && ! ls /dev/dri/renderD* >/dev/null 2>&1; then
+    export LIBGL_ALWAYS_SOFTWARE=1
+    if [ -z "$GSK_RENDERER" ]; then
+        export GSK_RENDERER=cairo
+    fi
+fi
+
 # Locate Python 3 interpreter (>= 3.10) with PIL and gi support
 PYTHON_CMD=""
 for py in python3 python3.13 python3.12 python3.11 python3.10 /usr/bin/python3; do
@@ -153,17 +161,11 @@ echo "✓ Desktop entry created at $DESKTOP_DIR/io.github.muhaideennausar.Glyph.
 echo "✓ AppStream metainfo installed at $METAINFO_DIR/io.github.muhaideennausar.Glyph.metainfo.xml"
 echo "✓ High-resolution & symbolic icons installed to $ICONS_DIR"
 
-# Configure global desktop shortcuts interactively (if Python dependencies are satisfied)
-if python3 -c "import PIL, gi" 2>/dev/null; then
-    if [ -t 0 ]; then
-        "$BIN_DIR/glyph" --setup-shortcuts || true
-    else
-        "$BIN_DIR/glyph" --setup-shortcuts -y || true
-    fi
+# Configure global desktop shortcuts interactively
+if [ -t 0 ]; then
+    "$BIN_DIR/glyph" --setup-shortcuts || true
 else
-    echo ""
-    echo "ℹ️  Note: Global shortcuts can be set up after installing the dependencies above by running:"
-    echo "   glyph --setup-shortcuts"
+    "$BIN_DIR/glyph" --setup-shortcuts -y || true
 fi
 
 echo ""
