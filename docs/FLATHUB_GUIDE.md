@@ -45,8 +45,8 @@ Before submitting, verify that the following requirements are met:
 - [x] **App ID Format:** `io.github.muhaideennausar.Glyph` matches your GitHub profile domain (`muhaideennausar.github.io` / `github.com/muhaideennausar`).
 - [x] **AppStream MetaInfo Valid:** `data/io.github.muhaideennausar.Glyph.metainfo.xml` passes `appstreamcli validate --pedantic`.
 - [x] **Desktop Entry Valid:** `data/io.github.muhaideennausar.Glyph.desktop` passes `desktop-file-validate`.
-- [x] **Tagged Release on GitHub:** Release `v0.2.2` exists on `https://github.com/muhaideennausar/glyph-text-extractor`.
-- [x] **Manifest Sources:** Manifest references the public git tag `v0.2.2`.
+- [x] **Tagged Release on GitHub:** Release `v0.2.4` exists on `https://github.com/muhaideennausar/glyph-text-extractor`.
+- [x] **Manifest Sources:** Manifest references the public git tag `v0.2.4` and commit `22532957b8a6ffd5bc0ec6f34c52ec648fc02d9f`.
 
 ---
 
@@ -153,15 +153,15 @@ git push -u origin add-glyph
 
 ---
 
-## 5. Managing Future Releases (v0.2.2+)
+## 5. Managing Future Releases (v0.2.5+)
 
 Once your app is accepted on Flathub, you will never need to touch `flathub/flathub` again.
 
-For each future release (e.g. `v0.2.2`):
+For each future release (e.g. `v0.2.5`):
 
-1. In your personal repo, tag and release `v0.2.2`.
+1. In your personal repo, tag and release `v0.2.5`.
 2. Go to your dedicated repository at `https://github.com/flathub/io.github.muhaideennausar.Glyph`.
 3. Update `io.github.muhaideennausar.Glyph.yaml`:
-   - Change `tag: v0.2.1` to `tag: v0.2.2`.
+   - Change `tag: v0.2.4` to `tag: v0.2.5`.
    - Update `commit: <new-commit-hash>`.
 4. Commit directly or open a PR to `master`. Flathub will automatically build and distribute the update to all users worldwide!

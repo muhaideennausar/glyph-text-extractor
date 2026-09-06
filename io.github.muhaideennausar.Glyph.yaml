@@ -91,5 +91,5 @@ modules:
       - type: git
         url: https://github.com/muhaideennausar/glyph-text-extractor.git
         tag: v0.2.4
-        # commit hash will be pinned to release tag v0.2.4
+        commit: 22532957b8a6ffd5bc0ec6f34c52ec648fc02d9f
       # (Note for local testing: switch to type: dir, path: .)

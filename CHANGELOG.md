@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.4] - 2026-09-06
+
+### Fixed
+
+- **KDE Plasma Multi-Tier Shortcuts:** Implemented dedicated command shortcut launchers (`~/.local/share/applications/glyph-mode-*.desktop`) with `X-KDE-GlobalAccel-CommandShortcut=true` for seamless KDE Plasma 6 integration.
+- **Cross-Version Config Structure:** Structured `kglobalshortcutsrc` entries targeting both nested `[services]` groups (Plasma 6 native) and root groups (Plasma 5 legacy) via `kwriteconfig6`/`kwriteconfig5`.
+- **Active Daemon Reload & D-Bus Binding:** Integrated multi-signal daemon reload pipeline (`kbuildsycoca6/5`, `KWin.reconfigure`, `plasma-kglobalaccel.service` refresh) and direct D-Bus `setShortcutKeys` call to `org.kde.kglobalaccel` for instant shortcut binding without logout.
+- **Freedesktop Desktop Extensions:** Added `X-KDE-Shortcuts` entries (`Meta+Shift+T`, `Meta+Shift+I`) to primary desktop entry.
+
+---
+
+## [0.2.3] - 2026-09-06
+
+### Fixed
+
+- **KDE Plasma Shortcut Mapping:** Corrected desktop action mapping (`_launch`, `Editor`, `Instant`) with standard Qt key sequences.
+- **Virtual Machine Software Rendering:** Added automatic software rendering fallback (`GSK_RENDERER=cairo` and `LIBGL_ALWAYS_SOFTWARE=1`) to prevent Mesa Zink errors in virtualized environments.
+
+### Added
+
+- **Native KDE Spectacle Capture:** Added native KDE Spectacle screenshot engine (`spectacle -b -n -o`) for Wayland environments without `grim`.
+- **Automated Shortcut Setup:** Automated global shortcut registration prompt in `install.sh` and added post-install shortcut registration instructions to packaging tools.
+
+---
+
 ## [0.2.2] - 2026-09-06
 
 ### Fixed
