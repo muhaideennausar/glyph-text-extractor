@@ -18,7 +18,7 @@ cat << SPEC_EOF > "$RPM_TOPDIR/SPECS/glyph.spec"
 Name:           glyph-text-extractor
 Version:        ${VERSION}
 Release:        1%{?dist}
-Summary:        Lightning-fast screen text extractor for Linux
+Summary:        Screen text extractor and OCR utility for Linux
 License:        GPL-3.0-or-later
 URL:            https://github.com/muhaideennausar/glyph-text-extractor
 BuildArch:      noarch
@@ -34,8 +34,8 @@ Requires:       (tesseract-langpack-eng or tesseract-ocr-traineddata-english or 
 Requires:       wl-clipboard
 
 %description
-PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.
-Offers instant Mode A screen OCR directly to clipboard and interactive Mode B review editor.
+Screen text extractor and OCR utility designed for Wayland and X11 desktops.
+Provides interactive region capture directly to clipboard or a review modal.
 
 %install
 rm -rf %{buildroot}

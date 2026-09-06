@@ -22,9 +22,9 @@ Architecture: all
 Depends: python3, python3-pil, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1, tesseract-ocr, tesseract-ocr-eng, wl-clipboard
 Maintainer: Muhaideen Nausar <muhaideennausar@gmail.com>
 Homepage: https://github.com/muhaideennausar/glyph-text-extractor
-Description: Lightning-fast screen text extractor for Linux
- PowerToys Text Extractor alternative designed natively for Wayland and X11 desktops.
- Offers instant Mode A screen OCR directly to clipboard and interactive Mode B review editor.
+Description: Screen text extractor and OCR utility for Linux
+ Screen text extractor and OCR utility designed for Wayland and X11 desktops.
+ Provides interactive region capture directly to clipboard or a review modal.
 CONTROL_EOF
 
 # 2. Launcher binary
