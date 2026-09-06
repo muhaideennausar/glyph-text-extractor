@@ -242,8 +242,7 @@ def check_runtime_dependencies() -> None:
     if missing:
         sys.stderr.write(
             f"Error: Missing required Python dependencies: {', '.join(missing)}\n\n"
-            "Please install the required packages for your distribution:\n"
-            "  • openSUSE:      sudo zypper install python3-Pillow python3-gobject gtk4 libadwaita-1-0 tesseract-ocr\n"
+            "  • openSUSE:      sudo zypper install python3-Pillow python3-gobject typelib-1_0-Gtk-4_0 typelib-1_0-Adw-1 tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard\n"
             "  • Fedora:        sudo dnf install python3-pillow python3-gobject gtk4 libadwaita tesseract\n"
             "  • Debian/Ubuntu: sudo apt install python3-pil python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 tesseract-ocr\n"
             "  • Arch Linux:    sudo pacman -S python-pillow python-gobject gtk4 libadwaita tesseract\n\n"

@@ -25,8 +25,10 @@ BuildArch:      noarch
 Requires:       python3
 Requires:       (python3dist(pillow) or python3-pillow or python3-Pillow)
 Requires:       (python3dist(pygobject) or python3-gobject or python3-gi)
-Requires:       gtk4
-Requires:       (libadwaita or libadwaita-1-0)
+Requires:       (gtk4 or libgtk-4-1 or typelib-1_0-Gtk-4_0)
+Requires:       (typelib-1_0-Gtk-4_0 or gtk4)
+Requires:       (libadwaita or libadwaita-1-0 or typelib-1_0-Adw-1)
+Requires:       (typelib-1_0-Adw-1 or libadwaita)
 Requires:       (tesseract or tesseract-ocr)
 Requires:       (tesseract-langpack-eng or tesseract-ocr-traineddata-english or tesseract-data-eng)
 Requires:       wl-clipboard

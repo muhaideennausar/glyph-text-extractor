@@ -36,7 +36,7 @@ if [ ${#MISSING_PKGS[@]} -gt 0 ]; then
     echo "  Ubuntu/Debian: sudo apt update && sudo apt install -y ${MISSING_PKGS[*]}"
     echo "  Fedora:        sudo dnf install -y python3-pillow python3-gobject gtk4 libadwaita tesseract wl-clipboard"
     echo "  Arch:          sudo pacman -S --needed python-pillow python-gobject gtk4 libadwaita tesseract tesseract-data-eng wl-clipboard"
-    echo "  openSUSE:      sudo zypper install -y python3-Pillow python3-gobject gtk4 libadwaita-1-0 tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard"
+    echo "  openSUSE:      sudo zypper install -y python3-Pillow python3-gobject typelib-1_0-Gtk-4_0 typelib-1_0-Adw-1 tesseract-ocr tesseract-ocr-traineddata-english wl-clipboard"
     echo ""
 fi
 
